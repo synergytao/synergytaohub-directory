@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Synergy Tao – Directory</title>
+<style>
+  :root{--green:#2F6E4E;--leaf:#65B089;--soft:#F6F7F6;--ink:#222}
+  body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+  .dir-wrap{max-width:1100px;margin:0 auto;padding:28px 16px}
+  .dir-wrap h1{margin:0 0 6px;font-size:clamp(24px,3.5vw,36px)}
+  .dir-lead{color:#444;margin:0 0 18px}
+  .dir-controls{display:grid;gap:10px;margin:12px 0 16px}
+  .dir-search{display:flex;gap:8px;align-items:center;justify-content:center}
+  .dir-input{flex:1;max-width:480px;padding:12px 14px;border:1px solid #ddd;border-radius:10px;background:#fff}
+  .dir-btn{padding:12px 14px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#fff;font-weight:700;cursor:pointer}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
+  .chip{padding:6px 10px;border-radius:999px;background:var(--soft);border:1px solid #e7e7e7;cursor:pointer;font-size:13px}
+  .chip.active{background:var(--leaf);border-color:var(--leaf);color:#083;font-weight:700}
+  .count{font-size:13px;color:#555;text-align:center;margin:6px 0 8px}
+  .grid{display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
+  .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:16px}
+  .card h3{margin:0 0 6px;font-size:18px}
+  .meta{font-size:13px;color:#666;margin-top:4px}
+  .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .tag{font-size:12px;background:#eef7f1;border:1px solid #d8eee2;color:#225f45;border-radius:999px;padding:4px 8px}
+  .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .link{padding:8px 10px;border-radius:8px;border:1px solid #ddd;text-decoration:none;color:#174e36;background:#fff}
+  .link:hover{border-color:var(--leaf)}
+  .empty{padding:16px;border:1px dashed #ddd;border-radius:12px;background:#fafafa;text-align:center}
+</style>
+</head>
+<body>
+  <div class="dir-wrap" id="sth-dir">
+    <h1>Find a Practitioner or Service</h1>
+    <p class="dir-lead">Search by name or service (e.g. “Wing Chun”, “Qigong”, “Massage”, “Counselling”). Use filters to narrow by category.</p>
+
+    <div class="dir-controls">
+      <div class="dir-search">
+        <input id="sth-q" class="dir-input" type="search" placeholder="Search by name or service…" autocomplete="off">
+        <button class="dir-btn" id="sth-clear" type="button">Clear</button>
+      </div>
+      <div class="chips" id="sth-chips"></div>
+      <div class="count" id="sth-count"></div>
+    </div>
+
+    <div class="grid" id="sth-list"></div>
+    <div class="empty" id="sth-empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
+  </div>
+
+  <!-- Data -->
+  <script id="sth-data" type="application/json">
+  [
+    {
+      "name": "Synergy Tao",
+      "primaryService": "Wing Chun & Qigong",
+      "tags": ["Holistic Martial Arts","Wing Chun","Qigong","Self-Defence","Meditation","Adults"],
+      "website": "https://synergytao.co.uk",
+      "phone": "07956 096359",
+      "location": "Telford"
+    }
+  ]
+  </script>
+
+  <script>
+  (function(){
+    const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+    let entries=[]; try{ entries=JSON.parse($("#sth-data").textContent.trim()); }catch(e){ entries=[]; }
+    const cats=new Set(); entries.forEach(e=>{ if(e.primaryService) cats.add(e.primaryService.trim()); (e.tags||[]).forEach(t=>t&&cats.add(t.trim())); });
+    const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear");
+    const state={q:"",active:new Set()};
+    Array.from(cats).sort((a,b)=>a.localeCompare(b)).forEach(cat=>{
+      const chip=document.createElement("button"); chip.className="chip"; chip.type="button"; chip.textContent=cat;
+      chip.addEventListener("click",()=>{ if(state.active.has(cat)){state.active.delete(cat);chip.classList.remove("active");}else{state.active.add(cat);chip.classList.add("active");} render();});
+      chipsEl.appendChild(chip);
+    });
+    qEl.addEventListener("input",()=>{state.q=qEl.value.trim().toLowerCase();render();});
+    clearBtn.addEventListener("click",()=>{state.q="";qEl.value="";state.active.clear();$$(".chip.active").forEach(c=>c.classList.remove("active"));render();qEl.focus();});
+    const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+    function match(e){ const text=[e.name||"",e.primaryService||"", (e.tags||[]).join(" "), e.location||"", e.phone||""].join(" ").toLowerCase();
+      const qok=!state.q||text.includes(state.q); if(!qok) return false;
+      if(state.active.size===0) return true;
+      const tagset=new Set([e.primaryService,...(e.tags||[])].filter(Boolean).map(s=>String(s).toLowerCase()));
+      return Array.from(state.active).some(c=>tagset.has(String(c).toLowerCase())); }
+    function card(e){ const el=document.createElement("div"); el.className="card";
+      const tags=(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+      el.innerHTML=`<h3>${esc(e.name||"Unnamed")}</h3>
+        <div class="meta">${esc(e.primaryService||"")}${e.location?` · ${esc(e.location)}`:""}</div>
+        ${tags?`<div class="tagrow">${tags}</div>`:""}
+        <div class="actions">
+          ${e.website?`<a class="link" target="_blank" rel="noopener" href="${esc(e.website)}">Website</a>`:""}
+          ${e.phone?`<a class="link" href="tel:${esc(e.phone)}">Call</a>`:""}
+        </div>`;
+      return el; }
+    function render(){ const res=entries.filter(match); listEl.innerHTML=""; res.forEach(e=>listEl.appendChild(card(e)));
+      emptyEl.style.display=res.length?"none":"block"; countEl.textContent=`${res.length} result${res.length===1?"":"s"}`; }
+    render();
+  })();
+  </script>
+</body>
+</html>
