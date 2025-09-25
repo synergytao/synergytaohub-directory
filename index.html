@@ -1,68 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Synergy Tao Hub Directory</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Synergy Tao Holistic Health Hub – Directory</title>
+  <meta name="description" content="Directory of holistic & complementary services in Telford and Shropshire." />
   <style>
-    body{font-family:sans-serif;margin:0;background:#f4f4f9;color:#333}
-    header{background:#333;color:#fff;padding:1rem;text-align:center}
-    h1{margin:0;font-size:1.8rem}
-    .container{max-width:1000px;margin:20px auto;padding:0 15px}
-    .search{margin-bottom:20px;display:flex;gap:10px}
-    input{flex:1;padding:10px;font-size:1rem;border:1px solid #ccc;border-radius:6px}
-    button{padding:10px 16px;font-size:1rem;border:none;border-radius:6px;cursor:pointer;background:#e0a800;color:#fff}
-    button:hover{background:#c48f00}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-    .card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);display:flex;flex-direction:column}
-    .card h3{margin-top:0}
+    :root{--ink:#222;--bg:#f6f7f9;--card:#fff;--line:#e5e7eb;--accent:#2F6E4E;--accent2:#65B089;--gold:#C8A74E;--danger:#c0392b}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{background:#fff;border-bottom:1px solid var(--line);padding:14px 16px}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+    h1{margin:0;font-size:clamp(22px,3vw,28px)}
+    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .lead{margin:6px 0 14px;color:#444}
+    .searchbar{display:flex;gap:8px;align-items:center}
+    .search{flex:1;min-width:220px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    .btn{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#174e36;cursor:pointer}
+    .btn.primary{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:700}
+    .btn.gold{border-color:var(--gold);background:var(--gold);color:#111}
+    .btn.outline{border-color:var(--gold);background:#fff;color:#725f1c}
+    .btn.danger{border-color:var(--danger);background:#fff;color:var(--danger)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+    .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;cursor:pointer}
+    .chip.active{background:var(--accent2);border-color:var(--accent2);color:#083;font-weight:700}
+    .count{font-size:13px;color:#555;margin:6px 0 12px}
+    .grid{display:grid;gap:14px;grid-template-columns:1fr}
+    @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+    @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;position:relative}
     .thumb{width:100%;max-height:160px;border-radius:10px;margin-bottom:10px;background:#f4f4f4;display:block}
     .thumb.logo{object-fit:contain;padding:10px;background:#fff}
     .thumb.photo{object-fit:cover}
-    .links{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px}
-    .links a{padding:6px 10px;background:#333;color:#fff;text-decoration:none;font-size:0.85rem;border-radius:4px}
-    .links a:hover{background:#555}
+    .title{margin:0 0 6px;font-size:18px}
+    .meta{font-size:13px;color:#666;margin:2px 0 6px}
+    .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+    .tag{font-size:12px;background:#eef7f1;border:1px solid #d8eee2;color:#225f45;border-radius:999px;padding:4px 8px}
+    .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .socials a{font-size:12px;color:#2b5f46;text-decoration:none;border-bottom:1px dotted #2b5f46}
+    .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .link{padding:8px 10px;border-radius:8px;border:1px solid var(--line);text-decoration:none;color:#174e36;background:#fff}
+    .link:hover{border-color:var(--accent2)}
+    .empty{padding:16px;border:1px dashed var(--line);border-radius:12px;background:#fafafa;text-align:center}
+    .msg{margin:10px 0;padding:12px;border-radius:10px}
+    .msg.warn{background:#fff8e1;border:1px solid #f0e1a8;color:#775a00}
+    .msg.err{background:#fff5f6;border:1px solid #f5c2c7;color:#8a1f2d}
+
+    /* Admin UI */
+    .admin-bar{display:none;gap:10px;align-items:center;justify-content:space-between}
+    .is-admin .admin-bar{display:flex}
+    .admin-switch{position:absolute;top:10px;right:10px;display:none;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 8px;gap:8px;align-items:center}
+    .admin-ops{display:none;gap:8px;margin-top:10px}
+    .is-admin .admin-switch, .is-admin .admin-ops{display:flex}
 
     /* Modal */
     .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px;z-index:50}
     .modal.open{display:flex}
-    .panel{background:#fff;max-width:720px;width:100%;max-height:90vh;border-radius:14px;border:1px solid #eee;box-shadow:0 10px 30px rgba(0,0,0,.1);display:flex;flex-direction:column}
-    .panel header{padding:14px 16px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;justify-content:space-between;flex:0 0 auto}
+    .panel{background:#fff;max-width:760px;width:100%;max-height:90vh;border-radius:14px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.1);display:flex;flex-direction:column}
+    .panel header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between;flex:0 0 auto}
+    .panel h3{margin:0;font-size:18px}
     .panel .content{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;min-height:0;flex:1 1 auto}
-    .panel footer{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end;flex:0 0 auto}
+    .panel .content label{font-size:13px;color:#333;display:flex;flex-direction:column;gap:6px}
+    .panel .content input[type="text"], .panel .content input[type="url"], .panel .content input[type="tel"], .panel .content input[type="email"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+    .panel .row{display:flex;gap:10px;align-items:center}
+    .panel .full{grid-column:1/-1}
+    .panel footer{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex:0 0 auto}
     @media (max-width:640px){.panel .content{grid-template-columns:1fr}}
     body.modal-open{overflow:hidden}
   </style>
 </head>
 <body>
   <header>
-    <h1>Synergy Tao Holistic Health Hub Directory</h1>
-  </header>
-  <div class="container">
-    <div class="search">
-      <input type="text" id="searchBox" placeholder="Search by name, service or location...">
-      <button id="adminBtn">Admin</button>
+    <div class="wrap">
+      <div class="topbar">
+        <h1>Synergy Tao Holistic Health Hub – Directory</h1>
+        <div class="searchbar">
+          <input id="q" class="search" type="search" placeholder="Search by name, service or town…" />
+          <button id="adminBtn" class="btn">Admin</button>
+        </div>
+      </div>
+      <p class="lead">Discover holistic & complementary services across Telford and Shropshire. Use the search or category filters below.</p>
+      <div id="adminBar" class="admin-bar">
+        <div class="msg warn"><strong>Admin Mode:</strong> toggle Live/Hidden, Edit, Delete, or Add entries. Click <em>Copy Updated JSON</em> to save back to GitHub.</div>
+        <div style="display:flex; gap:8px;">
+          <button id="addBtn" class="btn">Add Entry</button>
+          <button id="copyBtn" class="btn gold">Copy Updated JSON</button>
+          <button id="exitBtn" class="btn outline">Exit Admin</button>
+        </div>
+      </div>
+      <div id="chips" class="chips"></div>
+      <div id="count" class="count"></div>
     </div>
-    <div class="grid" id="results"></div>
-  </div>
+  </header>
 
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="panel">
+  <main class="wrap">
+    <div id="msg"></div>
+    <div id="list" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
+  </main>
+
+  <!-- Modal (Add/Edit) -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <header>
-        <h2>Add Directory Entry</h2>
-        <button onclick="closeModal()">✖</button>
+        <h3 id="modalTitle">Entry</h3>
+        <button id="closeModal" class="btn">Close</button>
       </header>
-      <div class="content" id="formContent">
-        <!-- form will be injected here -->
+      <div class="content">
+        <label><span>Live</span><div class="row"><input type="checkbox" id="f-live" checked><span class="muted">Show publicly</span></div></label>
+        <label><span>Is Logo?</span><div class="row"><input type="checkbox" id="f-islogo"><span class="muted">Treat image as a logo (centered)</span></div></label>
+
+        <label class="full"><span>Name *</span><input type="text" id="f-name" required></label>
+        <label class="full"><span>Primary Service</span><input type="text" id="f-primary" placeholder="e.g., Massage, Qigong, Counselling"></label>
+        <label class="full"><span>Tags (comma-separated)</span><input type="text" id="f-tags" placeholder="Massage, Relaxation, Holistic"></label>
+
+        <label class="full"><span>Image URL</span><input type="url" id="f-image" placeholder="https://.../image.jpg or .png"></label>
+        <label class="full"><span>Location / Town</span><input type="text" id="f-location" placeholder="Telford"></label>
+        <label class="full"><span>Phone</span><input type="tel" id="f-phone" placeholder="07123 456789"></label>
+
+        <label><span>Website</span><input type="url" id="f-website" placeholder="https://example.com"></label>
+        <label><span>Hub Profile</span><input type="url" id="f-profile" placeholder="https://synergytaohub.co.uk/page/..."></label>
+
+        <label><span>Facebook</span><input type="url" id="f-facebook" placeholder="https://facebook.com/..."></label>
+        <label><span>Instagram</span><input type="url" id="f-instagram" placeholder="https://instagram.com/..."></label>
+        <label><span>X</span><input type="url" id="f-x" placeholder="https://x.com/..."></label>
+        <label><span>TikTok</span><input type="url" id="f-tiktok" placeholder="https://tiktok.com/@..."></label>
+        <label><span>Bluesky</span><input type="url" id="f-bluesky" placeholder="https://bsky.app/profile/..."></label>
+        <label><span>YouTube</span><input type="url" id="f-youtube" placeholder="https://youtube.com/@..."></label>
+        <label><span>LinkedIn</span><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/..."></label>
+        <label><span>Booking</span><input type="url" id="f-booking" placeholder="https://bookinglink.com/..."></label>
+        <label><span>Email</span><input type="email" id="f-email" placeholder="name@example.com"></label>
+        <label><span>WhatsApp</span><input type="url" id="f-whatsapp" placeholder="https://wa.me/44..."></label>
+
+        <label class="full"><span>Notes (private)</span><input type="text" id="f-notes" placeholder="Internal note e.g. waiting on logo"></label>
       </div>
       <footer>
-        <button onclick="saveEntry()">Save</button>
-        <button onclick="closeModal()">Cancel</button>
+        <button id="saveEntry" class="btn gold">Save</button>
+        <button id="cancelEntry" class="btn">Cancel</button>
       </footer>
     </div>
   </div>
 
+  <!-- DATA -->
   <script id="sth-data" type="application/json">
   [
     {
@@ -115,122 +194,326 @@
   </script>
 
   <script>
-    const data = JSON.parse(document.getElementById("sth-data").textContent);
-    const results = document.getElementById("results");
-    const searchBox = document.getElementById("searchBox");
-    const modal = document.getElementById("modal");
-    const formContent = document.getElementById("formContent");
-    const ADMIN_PASS = "ST_Admin_Pass"; // change this
+    // ===== Config =====
+    const ADMIN_PASS = "ST_Admin_Pass"; // <<-- CHANGE YOUR ADMIN PASSWORD HERE
 
-    let adminMode = false;
+    // ===== Shortcuts =====
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
 
-    function esc(s){return String(s||"")}
-    function card(e){
-      if(!e.live) return "";
-      const thumb = e.image ? `<img class="thumb ${e.isLogo?'logo':'photo'}" src="${esc(e.image)}" alt="">` : "";
-      let links = "";
-      [["Website","website"],["Profile","profile"],["Facebook","facebook"],["Instagram","instagram"],["X","x"],["TikTok","tiktok"],["Bluesky","bluesky"],["YouTube","youtube"],["LinkedIn","linkedin"],["Booking","booking"],["Email","email"],["WhatsApp","whatsapp"],["Phone","phone"]]
-      .forEach(([label,key])=>{
-        if(e[key] && e[key].trim()){
-          links += `<a href="${esc(e[key])}" target="_blank">${label}</a>`;
-        }
+    // ===== Elements =====
+    const qEl = $("#q");
+    const listEl = $("#list");
+    const emptyEl = $("#empty");
+    const msgEl = $("#msg");
+    const chipsEl = $("#chips");
+    const countEl = $("#count");
+    const adminBtn = $("#adminBtn");
+    const adminBar = $("#adminBar");
+    const addBtn = $("#addBtn");
+    const copyBtn = $("#copyBtn");
+    const exitBtn = $("#exitBtn");
+    const modal = $("#modal");
+    const modalTitle = $("#modalTitle");
+    const closeModalBtn = $("#closeModal");
+    const saveEntryBtn = $("#saveEntry");
+    const cancelEntryBtn = $("#cancelEntry");
+
+    // Modal form fields
+    const f = {
+      live: $("#f-live"),
+      isLogo: $("#f-islogo"),
+      name: $("#f-name"),
+      primary: $("#f-primary"),
+      tags: $("#f-tags"),
+      image: $("#f-image"),
+      location: $("#f-location"),
+      phone: $("#f-phone"),
+      website: $("#f-website"),
+      profile: $("#f-profile"),
+      facebook: $("#f-facebook"),
+      instagram: $("#f-instagram"),
+      x: $("#f-x"),
+      tiktok: $("#f-tiktok"),
+      bluesky: $("#f-bluesky"),
+      youtube: $("#f-youtube"),
+      linkedin: $("#f-linkedin"),
+      booking: $("#f-booking"),
+      email: $("#f-email"),
+      whatsapp: $("#f-whatsapp"),
+      notes: $("#f-notes")
+    };
+
+    // ===== State =====
+    let rawData = [];
+    try {
+      rawData = JSON.parse($("#sth-data").textContent.trim());
+      if (!Array.isArray(rawData)) throw new Error("Data must be an array");
+    } catch (e) {
+      msgEl.innerHTML = `<div class="msg err"><strong>Data error:</strong> ${e.message}</div>`;
+      rawData = [];
+    }
+    let admin = false;
+    let editIndex = null; // null = add new
+
+    // ===== Helpers =====
+    const esc = s => String(s ?? "");
+    const toTags = s => String(s || "").split(",").map(t => t.trim()).filter(Boolean);
+    const currentEntries = () => admin ? rawData : rawData.filter(e => e && e.live !== false);
+
+    function buildChips() {
+      chipsEl.innerHTML = "";
+      const set = new Set();
+      currentEntries().forEach(e => {
+        if (e.primaryService) set.add(e.primaryService.trim());
+        (e.tags || []).forEach(t => t && set.add(t.trim()));
       });
-      return `<div class="card">
-        ${thumb}
-        <h3>${esc(e.name)}</h3>
-        <p><strong>${esc(e.primaryService)}</strong></p>
-        <p>${esc((e.tags||[]).join(", "))}</p>
-        <p><em>${esc(e.location||"")}</em></p>
-        <div class="links">${links}</div>
-      </div>`;
+      Array.from(set).sort((a,b)=>a.localeCompare(b)).forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "chip";
+        btn.textContent = cat;
+        btn.onclick = () => {
+          btn.classList.toggle("active");
+          render();
+        };
+        chipsEl.appendChild(btn);
+      });
     }
-    function render(){
-      const q = searchBox.value.toLowerCase();
-      results.innerHTML = data.map(e=>{
-        if(!e.live) return "";
-        const hay = [e.name,e.primaryService,(e.tags||[]).join(" "),e.location].join(" ").toLowerCase();
-        if(hay.includes(q)) return card(e); else return "";
-      }).join("");
-    }
-    searchBox.addEventListener("input",render);
-    render();
 
-    // Admin mode
-    document.getElementById("adminBtn").addEventListener("click",()=>{
-      if(adminMode){
-        openModal();
-      } else {
-        const p = prompt("Enter admin password:");
-        if(p===ADMIN_PASS){adminMode=true;openModal();}
-        else alert("Incorrect password");
+    function activeChips() {
+      return $$("#chips .chip.active").map(c => c.textContent.toLowerCase());
+    }
+
+    function matchEntry(e, tokens, cats) {
+      const hay = [
+        e.name, e.primaryService, (e.tags || []).join(" "),
+        e.location, e.phone
+      ].join(" ").toLowerCase();
+      const qok = tokens.every(t => hay.includes(t));
+      if (!qok) return false;
+      if (cats.length === 0) return true;
+      const tagset = new Set([e.primaryService, ...(e.tags || [])].filter(Boolean).map(s => s.toLowerCase()));
+      return cats.some(c => tagset.has(c));
+    }
+
+    function miniLink(label, href) {
+      if (!href) return "";
+      return `<a class="link" target="_blank" rel="noopener" href="${esc(href)}">${label}</a>`;
+    }
+
+    function socialLinks(e) {
+      const links = [
+        ["Website", e.website],
+        ["Facebook", e.facebook],
+        ["Instagram", e.instagram],
+        ["X", e.x],
+        ["TikTok", e.tiktok],
+        ["Bluesky", e.bluesky],
+        ["YouTube", e.youtube],
+        ["LinkedIn", e.linkedin],
+        ["Book", e.booking],
+        ["Email", e.email],
+        ["WhatsApp", e.whatsapp]
+      ].map(([l, u]) => miniLink(l, u)).filter(Boolean).join("");
+      return links ? `<div class="socials">${links}</div>` : "";
+    }
+
+    function card(e, idx) {
+      const visible = e.live !== false;
+      if (!admin && !visible) return "";
+      const thumb = e.image ? `<img class="thumb ${e.isLogo ? "logo" : "photo"}" src="${esc(e.image)}" alt="${esc(e.name)}">` : "";
+      const tags = (e.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+
+      const adminSwitch = `
+        <label class="admin-switch">
+          <input type="checkbox" ${visible ? "checked" : ""} data-op="toggle" data-idx="${idx}"> Live
+        </label>`;
+
+      const adminOps = `
+        <div class="admin-ops">
+          <button class="btn" data-op="edit" data-idx="${idx}">Edit</button>
+          <button class="btn danger" data-op="delete" data-idx="${idx}">Delete</button>
+        </div>`;
+
+      return `
+        <div class="card" data-idx="${idx}">
+          ${admin ? adminSwitch : ""}
+          ${thumb}
+          <h3 class="title">${esc(e.name || "Unnamed")}</h3>
+          <div class="meta">${esc(e.primaryService || "")}${e.location ? ` · ${esc(e.location)}` : ""}</div>
+          ${tags ? `<div class="tagrow">${tags}</div>` : ""}
+          ${socialLinks(e)}
+          <div class="actions">
+            ${e.profile ? `<a class="link" target="_blank" rel="noopener" href="${esc(e.profile)}">View Hub Profile</a>` : ""}
+            ${e.phone ? `<a class="link" href="tel:${esc(e.phone)}">Call</a>` : ""}
+          </div>
+          ${admin ? adminOps : ""}
+        </div>`;
+    }
+
+    function render() {
+      document.body.classList.toggle("is-admin", admin);
+      adminBar.style.display = admin ? "flex" : "none";
+
+      // chips are rebuilt each render so they reflect live/admin set
+      buildChips();
+
+      const tokens = qEl.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const cats = activeChips();
+      const src = currentEntries().filter(e => matchEntry(e, tokens, cats));
+
+      listEl.innerHTML = src.map((e) => card(e, rawData.indexOf(e))).join("");
+      emptyEl.style.display = src.length ? "none" : "block";
+      countEl.textContent = `${src.length} result${src.length===1?"":"s"}`;
+
+      // Wire admin ops
+      if (admin) {
+        listEl.querySelectorAll("[data-op='toggle']").forEach(inp => {
+          inp.addEventListener("change", (ev) => {
+            const i = +ev.target.dataset.idx;
+            rawData[i].live = ev.target.checked;
+            render();
+          });
+        });
+        listEl.querySelectorAll("[data-op='edit']").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const i = +btn.dataset.idx;
+            openModal("Edit Entry", rawData[i], i);
+          });
+        });
+        listEl.querySelectorAll("[data-op='delete']").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const i = +btn.dataset.idx;
+            const name = rawData[i]?.name || "this entry";
+            if (confirm(`Delete "${name}"? This only affects this preview until you copy JSON.`)) {
+              rawData.splice(i,1);
+              render();
+            }
+          });
+        });
+      }
+    }
+
+    // ===== Admin controls =====
+    adminBtn.addEventListener("click", () => {
+      if (admin) { // already admin → just show bar
+        return render();
+      }
+      const p = prompt("Enter admin password:");
+      if (p === ADMIN_PASS) {
+        admin = true;
+        render();
+      } else if (p !== null) {
+        alert("Incorrect password.");
       }
     });
 
-    function openModal(){
-      formContent.innerHTML = buildForm();
+    exitBtn.addEventListener("click", () => { admin = false; render(); });
+
+    copyBtn.addEventListener("click", () => {
+      const text = JSON.stringify(rawData, null, 2);
+      navigator.clipboard.writeText(text).then(
+        () => alert("Updated JSON copied. Paste it back into index.html (inside the JSON block) and commit."),
+        () => {
+          const ta = document.createElement("textarea");
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          document.execCommand("copy"); document.body.removeChild(ta);
+          alert("Updated JSON copied. Paste it back into index.html and commit.");
+        }
+      );
+    });
+
+    addBtn.addEventListener("click", () => {
+      openModal("Add Entry", {
+        live:true,isLogo:false,name:"",primaryService:"",tags:[],image:"",
+        website:"",profile:"",facebook:"",instagram:"",x:"",tiktok:"",bluesky:"",
+        youtube:"",linkedin:"",booking:"",email:"",whatsapp:"",phone:"",location:"",notes:""
+      }, null);
+    });
+
+    // ===== Modal =====
+    function fillForm(d){
+      f.live.checked = d.live !== false;
+      f.isLogo.checked = !!d.isLogo;
+      f.name.value = d.name || "";
+      f.primary.value = d.primaryService || "";
+      f.tags.value = (d.tags||[]).join(", ");
+      f.image.value = d.image || "";
+      f.location.value = d.location || "";
+      f.phone.value = d.phone || "";
+      f.website.value = d.website || "";
+      f.profile.value = d.profile || "";
+      f.facebook.value = d.facebook || "";
+      f.instagram.value = d.instagram || "";
+      f.x.value = d.x || "";
+      f.tiktok.value = d.tiktok || "";
+      f.bluesky.value = d.bluesky || "";
+      f.youtube.value = d.youtube || "";
+      f.linkedin.value = d.linkedin || "";
+      f.booking.value = d.booking || "";
+      f.email.value = (d.email||"").replace(/^mailto:/i,"");
+      f.whatsapp.value = d.whatsapp || "";
+      f.notes.value = d.notes || "";
+    }
+
+    function collectForm(){
+      return {
+        live: f.live.checked,
+        isLogo: f.isLogo.checked,
+        name: f.name.value.trim(),
+        primaryService: f.primary.value.trim(),
+        tags: toTags(f.tags.value),
+        image: f.image.value.trim(),
+        location: f.location.value.trim(),
+        phone: f.phone.value.trim(),
+        website: f.website.value.trim(),
+        profile: f.profile.value.trim(),
+        facebook: f.facebook.value.trim(),
+        instagram: f.instagram.value.trim(),
+        x: f.x.value.trim(),
+        tiktok: f.tiktok.value.trim(),
+        bluesky: f.bluesky.value.trim(),
+        youtube: f.youtube.value.trim(),
+        linkedin: f.linkedin.value.trim(),
+        booking: f.booking.value.trim(),
+        email: f.email.value.trim() ? `mailto:${f.email.value.trim()}` : "",
+        whatsapp: f.whatsapp.value.trim(),
+        notes: f.notes.value.trim()
+      };
+    }
+
+    function openModal(title, data, index){
+      modalTitle.textContent = title;
+      fillForm(data || {});
+      editIndex = (index===0 || index) ? index : null;
       modal.classList.add("open");
       document.body.classList.add("modal-open");
     }
+
     function closeModal(){
       modal.classList.remove("open");
       document.body.classList.remove("modal-open");
+      editIndex = null;
     }
-    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open")) closeModal();});
 
-    function buildForm(){
-      return `
-        <label>Name<input id="fName"></label>
-        <label>Primary Service<input id="fService"></label>
-        <label>Tags (comma separated)<input id="fTags"></label>
-        <label>Image URL<input id="fImage"></label>
-        <label>Logo? <input type="checkbox" id="fLogo"></label>
-        <label>Website<input id="fWebsite"></label>
-        <label>Profile<input id="fProfile"></label>
-        <label>Facebook<input id="fFacebook"></label>
-        <label>Instagram<input id="fInstagram"></label>
-        <label>X<input id="fX"></label>
-        <label>TikTok<input id="fTiktok"></label>
-        <label>Bluesky<input id="fBluesky"></label>
-        <label>YouTube<input id="fYoutube"></label>
-        <label>LinkedIn<input id="fLinkedin"></label>
-        <label>Booking<input id="fBooking"></label>
-        <label>Email<input id="fEmail"></label>
-        <label>WhatsApp<input id="fWhatsapp"></label>
-        <label>Phone<input id="fPhone"></label>
-        <label>Location<input id="fLocation"></label>
-        <label>Live? <input type="checkbox" id="fLive" checked></label>
-        <label>Notes<textarea id="fNotes"></textarea></label>
-      `;
-    }
-    function saveEntry(){
-      const entry = {
-        live: document.getElementById("fLive").checked,
-        name: document.getElementById("fName").value,
-        primaryService: document.getElementById("fService").value,
-        tags: document.getElementById("fTags").value.split(",").map(s=>s.trim()).filter(Boolean),
-        image: document.getElementById("fImage").value,
-        isLogo: document.getElementById("fLogo").checked,
-        website: document.getElementById("fWebsite").value,
-        profile: document.getElementById("fProfile").value,
-        facebook: document.getElementById("fFacebook").value,
-        instagram: document.getElementById("fInstagram").value,
-        x: document.getElementById("fX").value,
-        tiktok: document.getElementById("fTiktok").value,
-        bluesky: document.getElementById("fBluesky").value,
-        youtube: document.getElementById("fYoutube").value,
-        linkedin: document.getElementById("fLinkedin").value,
-        booking: document.getElementById("fBooking").value,
-        email: document.getElementById("fEmail").value,
-        whatsapp: document.getElementById("fWhatsapp").value,
-        phone: document.getElementById("fPhone").value,
-        location: document.getElementById("fLocation").value,
-        notes: document.getElementById("fNotes").value
-      };
-      data.push(entry);
-      render();
+    closeModalBtn.addEventListener("click", closeModal);
+    cancelEntryBtn.addEventListener("click", closeModal);
+    document.addEventListener("keydown", e => { if(e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+
+    saveEntryBtn.addEventListener("click", () => {
+      const obj = collectForm();
+      if (!obj.name) { alert("Name is required."); return; }
+      if (editIndex===0 || typeof editIndex === "number") rawData[editIndex] = obj;
+      else rawData.push(obj);
       closeModal();
-      alert("Entry added locally. To make permanent, update the JSON in GitHub.");
-    }
+      render();
+    });
+
+    // ===== Search render =====
+    qEl.addEventListener("input", render);
+
+    // Initial render
+    render();
   </script>
 </body>
 </html>
