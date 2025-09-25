@@ -1,146 +1,68 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Synergy Tao – Directory</title>
-<meta name="description" content="Community directory of holistic & complementary services in Telford and Shropshire: Qigong, Wing Chun, massage, counselling, yoga, and more." />
-<style>
-  :root{--green:#2F6E4E;--leaf:#65B089;--soft:#F6F7F6;--ink:#222;--gold:#C8A74E;--error:#8a1f2d}
-  *{box-sizing:border-box}
-  body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
-  .dir-wrap{max-width:1100px;margin:0 auto;padding:28px 16px}
-  .dir-wrap h1{margin:0 0 6px;font-size:clamp(24px,3.5vw,36px)}
-  .dir-lead{color:#444;margin:0 0 18px}
-  .dir-controls{display:grid;gap:10px;margin:12px 0 16px}
-  .dir-topbar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-  .admin-btn{padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#174e36;cursor:pointer}
-  .dir-search{display:flex;gap:8px;align-items:center;justify-content:center;flex:1}
-  .dir-input{flex:1;max-width:540px;padding:12px 14px;border:1px solid #ddd;border-radius:10px;background:#fff}
-  .dir-btn{padding:12px 14px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#fff;font-weight:700;cursor:pointer}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
-  .chip{padding:6px 10px;border-radius:999px;background:var(--soft);border:1px solid #e7e7e7;cursor:pointer;font-size:13px}
-  .chip.active{background:var(--leaf);border-color:var(--leaf);color:#083;font-weight:700}
-  .count{font-size:13px;color:#555;text-align:center;margin:6px 0 8px}
-  .grid{display:grid;gap:14px;grid-template-columns:1fr}
-  @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-  @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
-  .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:16px;display:flex;flex-direction:column;position:relative}
-  .thumb{width:100%;max-height:160px;border-radius:10px;margin-bottom:10px;background:#f4f4f4;display:block}
-  .thumb.logo{object-fit:contain;padding:10px;background:#fff}
-  .thumb.photo{object-fit:cover}
-  .card h3{margin:0 0 6px;font-size:18px}
-  .meta{font-size:13px;color:#666;margin-top:4px}
-  .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .tag{font-size:12px;background:#eef7f1;border:1px solid #d8eee2;color:#225f45;border-radius:999px;padding:4px 8px}
-  .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-  .link{padding:8px 10px;border-radius:8px;border:1px solid #ddd;text-decoration:none;color:#174e36;background:#fff}
-  .link:hover{border-color:var(--leaf)}
-  .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
-  .socials a{font-size:12px;color:#2b5f46;text-decoration:none;border-bottom:1px dotted #2b5f46}
-  .empty{padding:16px;border:1px dashed #ddd;border-radius:12px;background:#fafafa;text-align:center}
-  .error{padding:16px;border:1px solid #f5c2c7;background:#fff5f6;color:var(--error);border-radius:12px}
-  .muted{color:#666;font-size:13px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synergy Tao Hub Directory</title>
+  <style>
+    body{font-family:sans-serif;margin:0;background:#f4f4f9;color:#333}
+    header{background:#333;color:#fff;padding:1rem;text-align:center}
+    h1{margin:0;font-size:1.8rem}
+    .container{max-width:1000px;margin:20px auto;padding:0 15px}
+    .search{margin-bottom:20px;display:flex;gap:10px}
+    input{flex:1;padding:10px;font-size:1rem;border:1px solid #ccc;border-radius:6px}
+    button{padding:10px 16px;font-size:1rem;border:none;border-radius:6px;cursor:pointer;background:#e0a800;color:#fff}
+    button:hover{background:#c48f00}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+    .card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);display:flex;flex-direction:column}
+    .card h3{margin-top:0}
+    .thumb{width:100%;max-height:160px;border-radius:10px;margin-bottom:10px;background:#f4f4f4;display:block}
+    .thumb.logo{object-fit:contain;padding:10px;background:#fff}
+    .thumb.photo{object-fit:cover}
+    .links{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px}
+    .links a{padding:6px 10px;background:#333;color:#fff;text-decoration:none;font-size:0.85rem;border-radius:4px}
+    .links a:hover{background:#555}
 
-  /* Admin */
-  .admin-banner{display:none;background:#fff8e1;border:1px solid #f0e1a8;color:#775a00;padding:10px 12px;border-radius:10px;align-items:center;gap:10px}
-  .admin-actions{display:none;gap:8px;flex-wrap:wrap;margin-left:auto}
-  .gold{background:var(--gold);border-color:var(--gold);color:#111}
-  .outline{background:#fff;border-color:var(--gold);color:#6b5a20}
-  .admin-switch{position:absolute;top:10px;right:10px;display:none;font-size:12px;background:#fff;border:1px solid #ddd;border-radius:999px;padding:4px 8px}
-  .admin-switch input{vertical-align:middle;margin-right:6px}
-  .is-admin .admin-banner, .is-admin .admin-actions, .is-admin .admin-switch{display:flex}
-
-  /* Modal */
-  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px;z-index:50}
-  .modal.open{display:flex}
-  .panel{background:#fff;max-width:720px;width:100%;border-radius:14px;border:1px solid #eee;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-  .panel header{padding:14px 16px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;justify-content:space-between}
-  .panel h3{margin:0;font-size:18px}
-  .panel .content{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .panel .content .full{grid-column:1/-1}
-  .panel .content label{font-size:13px;color:#333;display:flex;flex-direction:column;gap:6px}
-  .panel input[type="text"], .panel input[type="url"], .panel input[type="tel"], .panel input[type="email"]{
-    width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px
-  }
-  .panel .row{display:flex;gap:10px;align-items:center}
-  .panel footer{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end}
-</style>
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px;z-index:50}
+    .modal.open{display:flex}
+    .panel{background:#fff;max-width:720px;width:100%;max-height:90vh;border-radius:14px;border:1px solid #eee;box-shadow:0 10px 30px rgba(0,0,0,.1);display:flex;flex-direction:column}
+    .panel header{padding:14px 16px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;justify-content:space-between;flex:0 0 auto}
+    .panel .content{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;min-height:0;flex:1 1 auto}
+    .panel footer{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end;flex:0 0 auto}
+    @media (max-width:640px){.panel .content{grid-template-columns:1fr}}
+    body.modal-open{overflow:hidden}
+  </style>
 </head>
 <body>
-  <div class="dir-wrap" id="sth-dir">
-    <div class="dir-topbar">
-      <h1>Find a Practitioner or Service</h1>
-      <button id="sth-admin-toggle" class="admin-btn" type="button">Admin</button>
+  <header>
+    <h1>Synergy Tao Holistic Health Hub Directory</h1>
+  </header>
+  <div class="container">
+    <div class="search">
+      <input type="text" id="searchBox" placeholder="Search by name, service or location...">
+      <button id="adminBtn">Admin</button>
     </div>
-    <p class="dir-lead">Search by name, service or town (e.g. “Massage Telford”, “Wing Chun Wellington”, “Qigong”). Use filters to narrow by category.</p>
-
-    <div class="admin-banner" id="sth-admin-banner" role="status">
-      <strong>Admin Mode</strong> – Toggle entries live/hidden, or add new entries. Changes are local; click <em>Copy Updated JSON</em> then paste into GitHub.
-      <div class="admin-actions">
-        <button id="sth-add-entry" class="admin-btn outline" type="button">Add Entry</button>
-        <button id="sth-copy-json" class="admin-btn gold" type="button">Copy Updated JSON</button>
-        <button id="sth-exit-admin" class="admin-btn outline" type="button">Exit</button>
-      </div>
-    </div>
-
-    <div class="dir-controls">
-      <div class="dir-search">
-        <input id="sth-q" class="dir-input" type="search" placeholder="Search by name, service or town…" autocomplete="off" aria-label="Search directory">
-        <button class="dir-btn" id="sth-clear" type="button">Clear</button>
-      </div>
-      <div class="chips" id="sth-chips"></div>
-      <div class="count" id="sth-count"></div>
-    </div>
-
-    <div id="sth-msg"></div>
-    <div class="grid" id="sth-list"></div>
-    <div class="empty" id="sth-empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
+    <div class="grid" id="results"></div>
   </div>
 
-  <!-- Add Entry Modal -->
-  <div class="modal" id="sth-modal">
+  <!-- Modal -->
+  <div class="modal" id="modal">
     <div class="panel">
       <header>
-        <h3>Add Directory Entry</h3>
-        <button id="sth-close" class="admin-btn" type="button">Close</button>
+        <h2>Add Directory Entry</h2>
+        <button onclick="closeModal()">✖</button>
       </header>
-      <div class="content">
-        <label><span>Live</span><div class="row"><input type="checkbox" id="f-live" checked><span class="muted">Show publicly</span></div></label>
-        <label><span>Is Logo?</span><div class="row"><input type="checkbox" id="f-islogo"><span class="muted">Treat image as a logo (centered)</span></div></label>
-
-        <label class="full"><span>Name *</span><input type="text" id="f-name" placeholder="Business name" required></label>
-        <label class="full"><span>Primary Service</span><input type="text" id="f-primary" placeholder="e.g., Massage, Qigong, Counselling"></label>
-
-        <label class="full"><span>Tags (comma-separated)</span><input type="text" id="f-tags" placeholder="Massage, Relaxation, Holistic"></label>
-
-        <label class="full"><span>Image URL</span><input type="url" id="f-image" placeholder="https://.../image.jpg or .png"></label>
-        <label class="full"><span>Location / Town</span><input type="text" id="f-location" placeholder="Telford"></label>
-        <label class="full"><span>Phone</span><input type="tel" id="f-phone" placeholder="07123 456789"></label>
-
-        <label><span>Website</span><input type="url" id="f-website" placeholder="https://example.com"></label>
-        <label><span>Hub Profile</span><input type="url" id="f-profile" placeholder="https://synergytaohub.co.uk/page/..."></label>
-
-        <label><span>Facebook</span><input type="url" id="f-facebook" placeholder="https://facebook.com/..."></label>
-        <label><span>Instagram</span><input type="url" id="f-instagram" placeholder="https://instagram.com/..."></label>
-        <label><span>X</span><input type="url" id="f-x" placeholder="https://x.com/..."></label>
-        <label><span>TikTok</span><input type="url" id="f-tiktok" placeholder="https://tiktok.com/@..."></label>
-        <label><span>Bluesky</span><input type="url" id="f-bluesky" placeholder="https://bsky.app/profile/..."></label>
-        <label><span>YouTube</span><input type="url" id="f-youtube" placeholder="https://youtube.com/@..."></label>
-        <label><span>LinkedIn</span><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/..."></label>
-        <label><span>Booking</span><input type="url" id="f-booking" placeholder="https://bookinglink.com/..."></label>
-        <label><span>Email</span><input type="email" id="f-email" placeholder="name@example.com"></label>
-        <label><span>WhatsApp</span><input type="url" id="f-whatsapp" placeholder="https://wa.me/44..."></label>
-
-        <label class="full"><span>Notes (private)</span><input type="text" id="f-notes" placeholder="Internal note e.g. waiting on logo"></label>
+      <div class="content" id="formContent">
+        <!-- form will be injected here -->
       </div>
       <footer>
-        <button id="sth-add-save" class="admin-btn gold" type="button">Add to Page</button>
+        <button onclick="saveEntry()">Save</button>
+        <button onclick="closeModal()">Cancel</button>
       </footer>
     </div>
   </div>
 
-  <!-- Directory Data (JSON) -->
   <script id="sth-data" type="application/json">
   [
     {
@@ -193,243 +115,122 @@
   </script>
 
   <script>
-  (function(){
-    const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
-    const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear"), msgEl=$("#sth-msg");
-    const adminToggleBtn=$("#sth-admin-toggle"), adminBanner=$("#sth-admin-banner"), copyBtn=$("#sth-copy-json"), exitBtn=$("#sth-exit-admin");
-    const addBtn=$("#sth-add-entry"), modal=$("#sth-modal"), closeBtn=$("#sth-close"), addSaveBtn=$("#sth-add-save");
+    const data = JSON.parse(document.getElementById("sth-data").textContent);
+    const results = document.getElementById("results");
+    const searchBox = document.getElementById("searchBox");
+    const modal = document.getElementById("modal");
+    const formContent = document.getElementById("formContent");
+    const ADMIN_PASS = "ST_Admin_Pass"; // change this
 
-    // --- Admin mode handling (client-only) ---
-    const ADMIN_PASS = "ST_Admin_Pass"; // change this to anything you like
-    function getQueryParam(name){ return new URLSearchParams(location.search).get(name); }
-    function setAdmin(on){ document.body.classList.toggle('is-admin', !!on); if(!on){localStorage.removeItem('sth-admin');} else {localStorage.setItem('sth-admin','1');} }
-    function isAdmin(){ return localStorage.getItem('sth-admin')==='1' || getQueryParam('admin')==='1'; }
-    function askPass(){
-      const p = prompt("Enter admin passphrase:");
-      if(p && p===ADMIN_PASS){ setAdmin(true); render(); }
-      else if(p!==null){ alert("Incorrect passphrase."); }
-    }
-    adminToggleBtn.addEventListener('click', ()=> { if(isAdmin()) setAdmin(false); else askPass(); render(); });
-    exitBtn && exitBtn.addEventListener('click', ()=> { setAdmin(false); render(); });
-    if(isAdmin()) setAdmin(true);
+    let adminMode = false;
 
-    // Parse JSON safely
-    let entries=[];
-    try{
-      const raw=$("#sth-data").textContent.trim();
-      entries = JSON.parse(raw);
-      if(!Array.isArray(entries)) throw new Error("Directory data must be a JSON array.");
-    }catch(err){
-      msgEl.innerHTML = '<div class="error"><strong>Directory data error:</strong> ' + (err.message||'Invalid JSON') +
-        '<div class="muted">Tip: Check commas and quotes between entries inside the data block.</div></div>';
-      entries = [];
-    }
-
-    // Helpers
-    const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-    const toTags=str => (String(str||"").split(",").map(s=>s.trim()).filter(Boolean));
-
-    function currentEntries(){ return isAdmin() ? entries : entries.filter(e => e && e.live !== false); }
-
-    function rebuildChips(){
-      chipsEl.innerHTML = "";
-      const cats=new Set();
-      currentEntries().forEach(e=>{
-        if(e.primaryService) cats.add(String(e.primaryService).trim());
-        (e.tags||[]).forEach(t=> t && cats.add(String(t).trim()));
+    function esc(s){return String(s||"")}
+    function card(e){
+      if(!e.live) return "";
+      const thumb = e.image ? `<img class="thumb ${e.isLogo?'logo':'photo'}" src="${esc(e.image)}" alt="">` : "";
+      let links = "";
+      [["Website","website"],["Profile","profile"],["Facebook","facebook"],["Instagram","instagram"],["X","x"],["TikTok","tiktok"],["Bluesky","bluesky"],["YouTube","youtube"],["LinkedIn","linkedin"],["Booking","booking"],["Email","email"],["WhatsApp","whatsapp"],["Phone","phone"]]
+      .forEach(([label,key])=>{
+        if(e[key] && e[key].trim()){
+          links += `<a href="${esc(e[key])}" target="_blank">${label}</a>`;
+        }
       });
-      Array.from(cats).sort((a,b)=>a.localeCompare(b)).forEach(cat=>{
-        const chip=document.createElement("button");
-        chip.className="chip"; chip.type="button"; chip.textContent=cat;
-        chip.addEventListener("click",()=>{
-          if(state.active.has(cat)){ state.active.delete(cat); chip.classList.remove("active"); }
-          else { state.active.add(cat); chip.classList.add("active"); }
-          render();
-        });
-        chipsEl.appendChild(chip);
-      });
-    }
-
-    const state={ tokens:[], active:new Set() };
-    function setQuery(q){
-      const norm = (q||"").toLowerCase().trim();
-      state.tokens = norm ? norm.split(/\s+/).filter(Boolean) : [];
-      render();
-    }
-    qEl.addEventListener("input", ()=> setQuery(qEl.value) );
-    clearBtn.addEventListener("click", ()=>{
-      qEl.value=""; setQuery(""); state.active.clear(); $$(".chip.active").forEach(c=>c.classList.remove("active"));
-      qEl.focus();
-    });
-
-    function textIndex(e){
-      return [
-        e.name||"", e.primaryService||"", (e.tags||[]).join(" "),
-        e.location||"", e.phone||""
-      ].join(" ").toLowerCase();
-    }
-    function match(e){
-      const t = textIndex(e);
-      const qok = state.tokens.every(tok => t.includes(tok));
-      if(!qok) return false;
-      if(state.active.size===0) return true;
-      const tagset = new Set([e.primaryService, ...(e.tags||[])].filter(Boolean).map(s=>String(s).toLowerCase()));
-      return Array.from(state.active).some(c=>tagset.has(c.toLowerCase()));
-    }
-
-    function miniLink(label, href){
-      if(!href) return "";
-      const safe = esc(href);
-      return `<a target="_blank" rel="noopener" href="${safe}">${label}</a>`;
-    }
-
-    function card(e, idx){
-      const el=document.createElement("div");
-      el.className="card";
-
-      // Admin live/hidden toggle
-      if(isAdmin()){
-        const sw=document.createElement('label');
-        sw.className='admin-switch';
-        const id='live_'+idx;
-        sw.innerHTML = `<input id="${id}" type="checkbox" ${e.live!==false?'checked':''}> Live`;
-        sw.querySelector('input').addEventListener('change', ev=>{
-          entries[idx].live = ev.target.checked;
-          render();
-        });
-        el.appendChild(sw);
-      }
-
-      const thumb = e.image && String(e.image).trim()
-        ? `<img class="thumb ${e.isLogo ? 'logo' : 'photo'}" src="${esc(e.image)}" alt="${esc(e.name||'Business')} logo or thumbnail">`
-        : "";
-
-      const tags=(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
-
-      const socials = [
-        miniLink("Website", e.website),
-        miniLink("Facebook", e.facebook),
-        miniLink("Instagram", e.instagram),
-        miniLink("X", e.x),
-        miniLink("TikTok", e.tiktok),
-        miniLink("Bluesky", e.bluesky),
-        miniLink("YouTube", e.youtube),
-        miniLink("LinkedIn", e.linkedin),
-        miniLink("Book", e.booking),
-        miniLink("Email", e.email),
-        miniLink("WhatsApp", e.whatsapp)
-      ].filter(Boolean).join("");
-
-      const socialBlock = socials ? `<div class="socials" aria-label="Social and contact links">${socials}</div>` : "";
-
-      const profileBtn = e.profile && String(e.profile).trim()
-        ? `<a class="link" target="_blank" rel="noopener" href="${esc(e.profile)}">View Hub Profile</a>`
-        : "";
-
-      el.innerHTML += `
+      return `<div class="card">
         ${thumb}
-        <h3>${esc(e.name||"Unnamed")}</h3>
-        <div class="meta">${esc(e.primaryService||"")}${e.location?` · ${esc(e.location)}`:""}</div>
-        ${tags?`<div class="tagrow">${tags}</div>`:""}
-        ${socialBlock}
-        <div class="actions">
-          ${profileBtn}
-          ${e.phone?`<a class="link" href="tel:${esc(e.phone)}">Call</a>`:""}
-        </div>
-      `;
-      return el;
+        <h3>${esc(e.name)}</h3>
+        <p><strong>${esc(e.primaryService)}</strong></p>
+        <p>${esc((e.tags||[]).join(", "))}</p>
+        <p><em>${esc(e.location||"")}</em></p>
+        <div class="links">${links}</div>
+      </div>`;
     }
-
     function render(){
-      document.body.classList.toggle('is-admin', isAdmin());
-      adminBanner.style.display = isAdmin() ? 'flex' : 'none';
-      rebuildChips();
-      const source = currentEntries();
-      const res = source.filter(match);
-      listEl.innerHTML = "";
-      res.forEach((e, i) => listEl.appendChild(card(e, entries.indexOf(e))) );
-      emptyEl.style.display = res.length ? "none" : "block";
-      countEl.textContent = `${res.length} result${res.length===1?"":"s"}`;
+      const q = searchBox.value.toLowerCase();
+      results.innerHTML = data.map(e=>{
+        if(!e.live) return "";
+        const hay = [e.name,e.primaryService,(e.tags||[]).join(" "),e.location].join(" ").toLowerCase();
+        if(hay.includes(q)) return card(e); else return "";
+      }).join("");
     }
-
-    function copyUpdatedJSON(){
-      try{
-        const text = JSON.stringify(entries, null, 2);
-        navigator.clipboard.writeText(text).then(()=>{
-          alert("Updated JSON copied to clipboard. Paste it into GitHub → index.html → overwrite the JSON block.");
-        }, ()=> {
-          const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
-          document.execCommand('copy'); document.body.removeChild(ta);
-          alert("Updated JSON copied. Paste it into GitHub.");
-        });
-      }catch(e){ alert("Could not copy JSON: " + (e.message||e)); }
-    }
-
-    // Modal helpers
-    function openModal(){ modal.classList.add('open'); }
-    function closeModal(){ modal.classList.remove('open'); }
-    closeBtn.addEventListener('click', closeModal);
-
-    function collectForm(){
-      const get = id => document.getElementById(id);
-      const obj = {
-        live: get('f-live').checked,
-        name: get('f-name').value.trim(),
-        primaryService: get('f-primary').value.trim(),
-        tags: toTags(get('f-tags').value),
-        image: get('f-image').value.trim(),
-        isLogo: get('f-islogo').checked,
-        website: get('f-website').value.trim(),
-        profile: get('f-profile').value.trim(),
-        facebook: get('f-facebook').value.trim(),
-        instagram: get('f-instagram').value.trim(),
-        x: get('f-x').value.trim(),
-        tiktok: get('f-tiktok').value.trim(),
-        bluesky: get('f-bluesky').value.trim(),
-        youtube: get('f-youtube').value.trim(),
-        linkedin: get('f-linkedin').value.trim(),
-        booking: get('f-booking').value.trim(),
-        email: (()=>{
-          const e = get('f-email').value.trim();
-          if(!e) return "";
-          return e.startsWith('mailto:') ? e : ('mailto:' + e);
-        })(),
-        whatsapp: get('f-whatsapp').value.trim(),
-        phone: get('f-phone').value.trim(),
-        location: get('f-location').value.trim(),
-        notes: get('f-notes').value.trim()
-      };
-      return obj;
-    }
-
-    function validateEntry(obj){
-      if(!obj.name){ alert("Name is required."); return false; }
-      return true;
-    }
-
-    addBtn && addBtn.addEventListener('click', ()=>{
-      if(!isAdmin()){ alert("Enable Admin mode first."); return; }
-      // Reset minimal fields each time (optional)
-      ['f-name','f-primary','f-tags','f-image','f-website','f-profile','f-facebook','f-instagram','f-x','f-tiktok','f-bluesky','f-youtube','f-linkedin','f-booking','f-email','f-whatsapp','f-phone','f-location','f-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
-      document.getElementById('f-live').checked = true;
-      document.getElementById('f-islogo').checked = false;
-      openModal();
-    });
-
-    addSaveBtn && addSaveBtn.addEventListener('click', ()=>{
-      const obj = collectForm();
-      if(!validateEntry(obj)) return;
-      entries.push(obj);
-      closeModal();
-      render();
-    });
-
-    copyBtn && copyBtn.addEventListener('click', copyUpdatedJSON);
-
-    if(getQueryParam('admin')==='1'){ setAdmin(true); }
-
+    searchBox.addEventListener("input",render);
     render();
-  })();
+
+    // Admin mode
+    document.getElementById("adminBtn").addEventListener("click",()=>{
+      if(adminMode){
+        openModal();
+      } else {
+        const p = prompt("Enter admin password:");
+        if(p===ADMIN_PASS){adminMode=true;openModal();}
+        else alert("Incorrect password");
+      }
+    });
+
+    function openModal(){
+      formContent.innerHTML = buildForm();
+      modal.classList.add("open");
+      document.body.classList.add("modal-open");
+    }
+    function closeModal(){
+      modal.classList.remove("open");
+      document.body.classList.remove("modal-open");
+    }
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open")) closeModal();});
+
+    function buildForm(){
+      return `
+        <label>Name<input id="fName"></label>
+        <label>Primary Service<input id="fService"></label>
+        <label>Tags (comma separated)<input id="fTags"></label>
+        <label>Image URL<input id="fImage"></label>
+        <label>Logo? <input type="checkbox" id="fLogo"></label>
+        <label>Website<input id="fWebsite"></label>
+        <label>Profile<input id="fProfile"></label>
+        <label>Facebook<input id="fFacebook"></label>
+        <label>Instagram<input id="fInstagram"></label>
+        <label>X<input id="fX"></label>
+        <label>TikTok<input id="fTiktok"></label>
+        <label>Bluesky<input id="fBluesky"></label>
+        <label>YouTube<input id="fYoutube"></label>
+        <label>LinkedIn<input id="fLinkedin"></label>
+        <label>Booking<input id="fBooking"></label>
+        <label>Email<input id="fEmail"></label>
+        <label>WhatsApp<input id="fWhatsapp"></label>
+        <label>Phone<input id="fPhone"></label>
+        <label>Location<input id="fLocation"></label>
+        <label>Live? <input type="checkbox" id="fLive" checked></label>
+        <label>Notes<textarea id="fNotes"></textarea></label>
+      `;
+    }
+    function saveEntry(){
+      const entry = {
+        live: document.getElementById("fLive").checked,
+        name: document.getElementById("fName").value,
+        primaryService: document.getElementById("fService").value,
+        tags: document.getElementById("fTags").value.split(",").map(s=>s.trim()).filter(Boolean),
+        image: document.getElementById("fImage").value,
+        isLogo: document.getElementById("fLogo").checked,
+        website: document.getElementById("fWebsite").value,
+        profile: document.getElementById("fProfile").value,
+        facebook: document.getElementById("fFacebook").value,
+        instagram: document.getElementById("fInstagram").value,
+        x: document.getElementById("fX").value,
+        tiktok: document.getElementById("fTiktok").value,
+        bluesky: document.getElementById("fBluesky").value,
+        youtube: document.getElementById("fYoutube").value,
+        linkedin: document.getElementById("fLinkedin").value,
+        booking: document.getElementById("fBooking").value,
+        email: document.getElementById("fEmail").value,
+        whatsapp: document.getElementById("fWhatsapp").value,
+        phone: document.getElementById("fPhone").value,
+        location: document.getElementById("fLocation").value,
+        notes: document.getElementById("fNotes").value
+      };
+      data.push(entry);
+      render();
+      closeModal();
+      alert("Entry added locally. To make permanent, update the JSON in GitHub.");
+    }
   </script>
 </body>
 </html>
