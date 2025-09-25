@@ -141,7 +141,7 @@
     const adminToggleBtn=$("#sth-admin-toggle"), adminBanner=$("#sth-admin-banner"), copyBtn=$("#sth-copy-json"), exitBtn=$("#sth-exit-admin");
 
     // --- Admin mode handling (client-only) ---
-    const ADMIN_PASS = "sthub"; // change this to anything you like
+    const ADMIN_PASS = "Admin_Pass"; // change this to anything you like
     function getQueryParam(name){ return new URLSearchParams(location.search).get(name); }
     function setAdmin(on){ document.body.classList.toggle('is-admin', !!on); if(!on){localStorage.removeItem('sth-admin');} else {localStorage.setItem('sth-admin','1');} }
     function isAdmin(){ return localStorage.getItem('sth-admin')==='1' || getQueryParam('admin')==='1'; }
