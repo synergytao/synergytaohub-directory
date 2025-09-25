@@ -50,6 +50,21 @@
   .admin-switch{position:absolute;top:10px;right:10px;display:none;font-size:12px;background:#fff;border:1px solid #ddd;border-radius:999px;padding:4px 8px}
   .admin-switch input{vertical-align:middle;margin-right:6px}
   .is-admin .admin-banner, .is-admin .admin-actions, .is-admin .admin-switch{display:flex}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px;z-index:50}
+  .modal.open{display:flex}
+  .panel{background:#fff;max-width:720px;width:100%;border-radius:14px;border:1px solid #eee;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+  .panel header{padding:14px 16px;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .panel h3{margin:0;font-size:18px}
+  .panel .content{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .panel .content .full{grid-column:1/-1}
+  .panel .content label{font-size:13px;color:#333;display:flex;flex-direction:column;gap:6px}
+  .panel input[type="text"], .panel input[type="url"], .panel input[type="tel"], .panel input[type="email"]{
+    width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px
+  }
+  .panel .row{display:flex;gap:10px;align-items:center}
+  .panel footer{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -61,8 +76,9 @@
     <p class="dir-lead">Search by name, service or town (e.g. “Massage Telford”, “Wing Chun Wellington”, “Qigong”). Use filters to narrow by category.</p>
 
     <div class="admin-banner" id="sth-admin-banner" role="status">
-      <strong>Admin Mode</strong> – Toggle entries live/hidden below. Changes are local. Click <em>Copy Updated JSON</em> and paste into GitHub to save.
+      <strong>Admin Mode</strong> – Toggle entries live/hidden, or add new entries. Changes are local; click <em>Copy Updated JSON</em> then paste into GitHub.
       <div class="admin-actions">
+        <button id="sth-add-entry" class="admin-btn outline" type="button">Add Entry</button>
         <button id="sth-copy-json" class="admin-btn gold" type="button">Copy Updated JSON</button>
         <button id="sth-exit-admin" class="admin-btn outline" type="button">Exit</button>
       </div>
@@ -80,6 +96,48 @@
     <div id="sth-msg"></div>
     <div class="grid" id="sth-list"></div>
     <div class="empty" id="sth-empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
+  </div>
+
+  <!-- Add Entry Modal -->
+  <div class="modal" id="sth-modal">
+    <div class="panel">
+      <header>
+        <h3>Add Directory Entry</h3>
+        <button id="sth-close" class="admin-btn" type="button">Close</button>
+      </header>
+      <div class="content">
+        <label><span>Live</span><div class="row"><input type="checkbox" id="f-live" checked><span class="muted">Show publicly</span></div></label>
+        <label><span>Is Logo?</span><div class="row"><input type="checkbox" id="f-islogo"><span class="muted">Treat image as a logo (centered)</span></div></label>
+
+        <label class="full"><span>Name *</span><input type="text" id="f-name" placeholder="Business name" required></label>
+        <label class="full"><span>Primary Service</span><input type="text" id="f-primary" placeholder="e.g., Massage, Qigong, Counselling"></label>
+
+        <label class="full"><span>Tags (comma-separated)</span><input type="text" id="f-tags" placeholder="Massage, Relaxation, Holistic"></label>
+
+        <label class="full"><span>Image URL</span><input type="url" id="f-image" placeholder="https://.../image.jpg or .png"></label>
+        <label class="full"><span>Location / Town</span><input type="text" id="f-location" placeholder="Telford"></label>
+        <label class="full"><span>Phone</span><input type="tel" id="f-phone" placeholder="07123 456789"></label>
+
+        <label><span>Website</span><input type="url" id="f-website" placeholder="https://example.com"></label>
+        <label><span>Hub Profile</span><input type="url" id="f-profile" placeholder="https://synergytaohub.co.uk/page/..."></label>
+
+        <label><span>Facebook</span><input type="url" id="f-facebook" placeholder="https://facebook.com/..."></label>
+        <label><span>Instagram</span><input type="url" id="f-instagram" placeholder="https://instagram.com/..."></label>
+        <label><span>X</span><input type="url" id="f-x" placeholder="https://x.com/..."></label>
+        <label><span>TikTok</span><input type="url" id="f-tiktok" placeholder="https://tiktok.com/@..."></label>
+        <label><span>Bluesky</span><input type="url" id="f-bluesky" placeholder="https://bsky.app/profile/..."></label>
+        <label><span>YouTube</span><input type="url" id="f-youtube" placeholder="https://youtube.com/@..."></label>
+        <label><span>LinkedIn</span><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/..."></label>
+        <label><span>Booking</span><input type="url" id="f-booking" placeholder="https://bookinglink.com/..."></label>
+        <label><span>Email</span><input type="email" id="f-email" placeholder="name@example.com"></label>
+        <label><span>WhatsApp</span><input type="url" id="f-whatsapp" placeholder="https://wa.me/44..."></label>
+
+        <label class="full"><span>Notes (private)</span><input type="text" id="f-notes" placeholder="Internal note e.g. waiting on logo"></label>
+      </div>
+      <footer>
+        <button id="sth-add-save" class="admin-btn gold" type="button">Add to Page</button>
+      </footer>
+    </div>
   </div>
 
   <!-- Directory Data (JSON) -->
@@ -139,9 +197,10 @@
     const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
     const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear"), msgEl=$("#sth-msg");
     const adminToggleBtn=$("#sth-admin-toggle"), adminBanner=$("#sth-admin-banner"), copyBtn=$("#sth-copy-json"), exitBtn=$("#sth-exit-admin");
+    const addBtn=$("#sth-add-entry"), modal=$("#sth-modal"), closeBtn=$("#sth-close"), addSaveBtn=$("#sth-add-save");
 
     // --- Admin mode handling (client-only) ---
-    const ADMIN_PASS = "Admin_Pass"; // change this to anything you like
+    const ADMIN_PASS = "ST_Admin_Pass"; // change this to anything you like
     function getQueryParam(name){ return new URLSearchParams(location.search).get(name); }
     function setAdmin(on){ document.body.classList.toggle('is-admin', !!on); if(!on){localStorage.removeItem('sth-admin');} else {localStorage.setItem('sth-admin','1');} }
     function isAdmin(){ return localStorage.getItem('sth-admin')==='1' || getQueryParam('admin')==='1'; }
@@ -166,10 +225,11 @@
       entries = [];
     }
 
-    // Build categories from all entries that are live (or all when admin to see chips even for hidden?)
-    function currentEntries(){
-      return isAdmin() ? entries : entries.filter(e => e && e.live !== false);
-    }
+    // Helpers
+    const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+    const toTags=str => (String(str||"").split(",").map(s=>s.trim()).filter(Boolean));
+
+    function currentEntries(){ return isAdmin() ? entries : entries.filter(e => e && e.live !== false); }
 
     function rebuildChips(){
       chipsEl.innerHTML = "";
@@ -191,7 +251,6 @@
     }
 
     const state={ tokens:[], active:new Set() };
-
     function setQuery(q){
       const norm = (q||"").toLowerCase().trim();
       state.tokens = norm ? norm.split(/\s+/).filter(Boolean) : [];
@@ -203,15 +262,12 @@
       qEl.focus();
     });
 
-    const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-
     function textIndex(e){
       return [
         e.name||"", e.primaryService||"", (e.tags||[]).join(" "),
         e.location||"", e.phone||""
       ].join(" ").toLowerCase();
     }
-
     function match(e){
       const t = textIndex(e);
       const qok = state.tokens.every(tok => t.includes(tok));
@@ -285,14 +341,9 @@
     }
 
     function render(){
-      // Admin UI bits
       document.body.classList.toggle('is-admin', isAdmin());
       adminBanner.style.display = isAdmin() ? 'flex' : 'none';
-
-      // Rebuild chips (in case live set changed)
       rebuildChips();
-
-      // Render list
       const source = currentEntries();
       const res = source.filter(match);
       listEl.innerHTML = "";
@@ -301,27 +352,82 @@
       countEl.textContent = `${res.length} result${res.length===1?"":"s"}`;
     }
 
-    // Copy updated JSON (admin)
     function copyUpdatedJSON(){
       try{
         const text = JSON.stringify(entries, null, 2);
         navigator.clipboard.writeText(text).then(()=>{
           alert("Updated JSON copied to clipboard. Paste it into GitHub → index.html → overwrite the JSON block.");
         }, ()=> {
-          // fallback
-          const ta=document.createElement('textarea');
-          ta.value=text; document.body.appendChild(ta); ta.select();
+          const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
           document.execCommand('copy'); document.body.removeChild(ta);
           alert("Updated JSON copied. Paste it into GitHub.");
         });
       }catch(e){ alert("Could not copy JSON: " + (e.message||e)); }
     }
+
+    // Modal helpers
+    function openModal(){ modal.classList.add('open'); }
+    function closeModal(){ modal.classList.remove('open'); }
+    closeBtn.addEventListener('click', closeModal);
+
+    function collectForm(){
+      const get = id => document.getElementById(id);
+      const obj = {
+        live: get('f-live').checked,
+        name: get('f-name').value.trim(),
+        primaryService: get('f-primary').value.trim(),
+        tags: toTags(get('f-tags').value),
+        image: get('f-image').value.trim(),
+        isLogo: get('f-islogo').checked,
+        website: get('f-website').value.trim(),
+        profile: get('f-profile').value.trim(),
+        facebook: get('f-facebook').value.trim(),
+        instagram: get('f-instagram').value.trim(),
+        x: get('f-x').value.trim(),
+        tiktok: get('f-tiktok').value.trim(),
+        bluesky: get('f-bluesky').value.trim(),
+        youtube: get('f-youtube').value.trim(),
+        linkedin: get('f-linkedin').value.trim(),
+        booking: get('f-booking').value.trim(),
+        email: (()=>{
+          const e = get('f-email').value.trim();
+          if(!e) return "";
+          return e.startsWith('mailto:') ? e : ('mailto:' + e);
+        })(),
+        whatsapp: get('f-whatsapp').value.trim(),
+        phone: get('f-phone').value.trim(),
+        location: get('f-location').value.trim(),
+        notes: get('f-notes').value.trim()
+      };
+      return obj;
+    }
+
+    function validateEntry(obj){
+      if(!obj.name){ alert("Name is required."); return false; }
+      return true;
+    }
+
+    addBtn && addBtn.addEventListener('click', ()=>{
+      if(!isAdmin()){ alert("Enable Admin mode first."); return; }
+      // Reset minimal fields each time (optional)
+      ['f-name','f-primary','f-tags','f-image','f-website','f-profile','f-facebook','f-instagram','f-x','f-tiktok','f-bluesky','f-youtube','f-linkedin','f-booking','f-email','f-whatsapp','f-phone','f-location','f-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+      document.getElementById('f-live').checked = true;
+      document.getElementById('f-islogo').checked = false;
+      openModal();
+    });
+
+    addSaveBtn && addSaveBtn.addEventListener('click', ()=>{
+      const obj = collectForm();
+      if(!validateEntry(obj)) return;
+      entries.push(obj);
+      closeModal();
+      render();
+    });
+
     copyBtn && copyBtn.addEventListener('click', copyUpdatedJSON);
 
-    // If URL has ?admin=1, auto-admin (passless). Otherwise require passphrase.
     if(getQueryParam('admin')==='1'){ setAdmin(true); }
 
-    // Initial render
     render();
   })();
   </script>
