@@ -7,6 +7,7 @@
 <meta name="description" content="Community directory of holistic & complementary services in Telford and Shropshire: Qigong, Wing Chun, massage, counselling, yoga, and more." />
 <style>
   :root{--green:#2F6E4E;--leaf:#65B089;--soft:#F6F7F6;--ink:#222}
+  *{box-sizing:border-box}
   body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
   .dir-wrap{max-width:1100px;margin:0 auto;padding:28px 16px}
   .dir-wrap h1{margin:0 0 6px;font-size:clamp(24px,3.5vw,36px)}
@@ -36,6 +37,8 @@
   .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
   .socials a{font-size:12px;color:#2b5f46;text-decoration:none;border-bottom:1px dotted #2b5f46}
   .empty{padding:16px;border:1px dashed #ddd;border-radius:12px;background:#fafafa;text-align:center}
+  .error{padding:16px;border:1px solid #f5c2c7;background:#fff5f6;color:#8a1f2d;border-radius:12px}
+  .muted{color:#666;font-size:13px}
 </style>
 </head>
 <body>
@@ -52,11 +55,12 @@
       <div class="count" id="sth-count"></div>
     </div>
 
+    <div id="sth-msg"></div>
     <div class="grid" id="sth-list"></div>
     <div class="empty" id="sth-empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
   </div>
 
-  <!-- Directory Data -->
+  <!-- Directory Data (JSON) -->
   <script id="sth-data" type="application/json">
   [
     {
@@ -68,10 +72,10 @@
       "website": "https://synergytao.co.uk",
       "profile": "https://synergytaohub.co.uk/page/synergy-tao",
       "facebook": "https://www.facebook.com/synergytao",
-      "instagram": "https://www.instagram.com/synergy_tao",
+      "instagram": "https://www.instagram.com/synergytao",
       "x": "",
       "tiktok": "",
-      "bluesky": "https://bsky.app/profile/sifudavidridgway.bsky.social",
+      "bluesky": "",
       "youtube": "",
       "linkedin": "",
       "booking": "",
@@ -79,49 +83,58 @@
       "whatsapp": "https://wa.me/447956096359",
       "phone": "07956 096359",
       "location": "Telford"
+    },
+    {
+      "name": "Business Name",
+      "primaryService": "Main Service",
+      "tags": ["Service 1", "Service 2", "Service 3"],
+      "image": "https://synergytaohub.co.uk/images/academies/17941/images/your-image.jpg",
+      "isLogo": false,
+      "website": "https://example.com",
+      "profile": "https://synergytaohub.co.uk/page/business-profile",
+      "facebook": "https://facebook.com/",
+      "instagram": "https://instagram.com/",
+      "x": "https://x.com/",
+      "tiktok": "https://tiktok.com/",
+      "bluesky": "https://bsky.app/",
+      "youtube": "https://youtube.com/",
+      "linkedin": "https://linkedin.com/",
+      "booking": "https://bookinglink.com",
+      "email": "mailto:info@example.com",
+      "whatsapp": "https://wa.me/447000000000",
+      "phone": "07123 456789",
+      "location": "Town, Shropshire"
     }
   ]
-    [
-  {
-    "name": "Business Name",
-    "primaryService": "Main Service",
-    "tags": ["Service 1", "Service 2", "Service 3"],
-    "image": "https://synergytaohub.co.uk/images/academies/17941/images/your-image.jpg",
-    "isLogo": false,
-    "website": "https://example.com",
-    "profile": "https://synergytaohub.co.uk/page/business-profile",
-    "facebook": "https://facebook.com/",
-    "instagram": "https://instagram.com/",
-    "x": "https://x.com/",
-    "tiktok": "https://tiktok.com/",
-    "bluesky": "https://bsky.app/",
-    "youtube": "https://youtube.com/",
-    "linkedin": "https://linkedin.com/",
-    "booking": "https://bookinglink.com",
-    "email": "mailto:info@example.com",
-    "whatsapp": "https://wa.me/447000000000",
-    "phone": "07123 456789",
-    "location": "Town, Shropshire"
-  }
-]
-
-
   </script>
 
   <script>
   (function(){
     const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
-    let entries=[]; try{ entries=JSON.parse($("#sth-data").textContent.trim()); }catch(e){ entries=[]; }
+    const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear"), msgEl=$("#sth-msg");
 
+    // Parse JSON safely and show helpful error if needed
+    let entries=[];
+    try{
+      const raw=$("#sth-data").textContent.trim();
+      entries = JSON.parse(raw);
+      if(!Array.isArray(entries)) throw new Error("Directory data must be a JSON array.");
+    }catch(err){
+      msgEl.innerHTML = '<div class="error"><strong>Directory data error:</strong> ' + (err.message||'Invalid JSON') +
+        '<div class="muted">Tip: Check commas and quotes between entries inside the data block.</div></div>';
+      entries = [];
+    }
+
+    // Build categories from primaryService + tags
     const cats=new Set();
     entries.forEach(e=>{
-      if(e.primaryService) cats.add(e.primaryService.trim());
-      (e.tags||[]).forEach(t=>t && cats.add(t.trim()));
+      if(e && e.primaryService) cats.add(String(e.primaryService).trim());
+      (e && e.tags || []).forEach(t=> t && cats.add(String(t).trim()));
     });
 
-    const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear");
     const state={ tokens:[], active:new Set() };
 
+    // Chips
     Array.from(cats).sort((a,b)=>a.localeCompare(b)).forEach(cat=>{
       const chip=document.createElement("button");
       chip.className="chip"; chip.type="button"; chip.textContent=cat;
@@ -133,6 +146,7 @@
       chipsEl.appendChild(chip);
     });
 
+    // Search: require ALL tokens to match (name/service/tags/location/phone)
     function setQuery(q){
       const norm = (q||"").toLowerCase().trim();
       state.tokens = norm ? norm.split(/\s+/).filter(Boolean) : [];
@@ -158,7 +172,7 @@
       const qok = state.tokens.every(tok => t.includes(tok));
       if(!qok) return false;
       if(state.active.size===0) return true;
-      const tagset = new Set([e.primaryService, ...(e.tags||[])].filter(Boolean).map(s=>s.toLowerCase()));
+      const tagset = new Set([e.primaryService, ...(e.tags||[])].filter(Boolean).map(s=>String(s).toLowerCase()));
       return Array.from(state.active).some(c=>tagset.has(c.toLowerCase()));
     }
 
@@ -172,8 +186,10 @@
       const el=document.createElement("div");
       el.className="card";
 
+      // Optional thumbnail (logo vs photo)
+      const isLogo = !!e.isLogo;
       const thumb = e.image && String(e.image).trim()
-        ? `<img class="thumb ${e.isLogo ? 'logo' : 'photo'}" src="${esc(e.image)}" alt="${esc(e.name||'Business')} logo or thumbnail">`
+        ? `<img class="thumb ${isLogo ? 'logo' : 'photo'}" src="${esc(e.image)}" alt="${esc(e.name||'Business')} logo or thumbnail">`
         : "";
 
       const tags=(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
