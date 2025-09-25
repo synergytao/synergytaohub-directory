@@ -6,14 +6,16 @@
 <title>Synergy Tao – Directory</title>
 <meta name="description" content="Community directory of holistic & complementary services in Telford and Shropshire: Qigong, Wing Chun, massage, counselling, yoga, and more." />
 <style>
-  :root{--green:#2F6E4E;--leaf:#65B089;--soft:#F6F7F6;--ink:#222}
+  :root{--green:#2F6E4E;--leaf:#65B089;--soft:#F6F7F6;--ink:#222;--gold:#C8A74E;--error:#8a1f2d}
   *{box-sizing:border-box}
   body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
   .dir-wrap{max-width:1100px;margin:0 auto;padding:28px 16px}
   .dir-wrap h1{margin:0 0 6px;font-size:clamp(24px,3.5vw,36px)}
   .dir-lead{color:#444;margin:0 0 18px}
   .dir-controls{display:grid;gap:10px;margin:12px 0 16px}
-  .dir-search{display:flex;gap:8px;align-items:center;justify-content:center}
+  .dir-topbar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+  .admin-btn{padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#174e36;cursor:pointer}
+  .dir-search{display:flex;gap:8px;align-items:center;justify-content:center;flex:1}
   .dir-input{flex:1;max-width:540px;padding:12px 14px;border:1px solid #ddd;border-radius:10px;background:#fff}
   .dir-btn{padding:12px 14px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#fff;font-weight:700;cursor:pointer}
   .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
@@ -23,7 +25,7 @@
   .grid{display:grid;gap:14px;grid-template-columns:1fr}
   @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
   @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
-  .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:16px;display:flex;flex-direction:column}
+  .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:16px;display:flex;flex-direction:column;position:relative}
   .thumb{width:100%;max-height:160px;border-radius:10px;margin-bottom:10px;background:#f4f4f4;display:block}
   .thumb.logo{object-fit:contain;padding:10px;background:#fff}
   .thumb.photo{object-fit:cover}
@@ -37,14 +39,34 @@
   .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
   .socials a{font-size:12px;color:#2b5f46;text-decoration:none;border-bottom:1px dotted #2b5f46}
   .empty{padding:16px;border:1px dashed #ddd;border-radius:12px;background:#fafafa;text-align:center}
-  .error{padding:16px;border:1px solid #f5c2c7;background:#fff5f6;color:#8a1f2d;border-radius:12px}
+  .error{padding:16px;border:1px solid #f5c2c7;background:#fff5f6;color:var(--error);border-radius:12px}
   .muted{color:#666;font-size:13px}
+
+  /* Admin */
+  .admin-banner{display:none;background:#fff8e1;border:1px solid #f0e1a8;color:#775a00;padding:10px 12px;border-radius:10px;align-items:center;gap:10px}
+  .admin-actions{display:none;gap:8px;flex-wrap:wrap;margin-left:auto}
+  .gold{background:var(--gold);border-color:var(--gold);color:#111}
+  .outline{background:#fff;border-color:var(--gold);color:#6b5a20}
+  .admin-switch{position:absolute;top:10px;right:10px;display:none;font-size:12px;background:#fff;border:1px solid #ddd;border-radius:999px;padding:4px 8px}
+  .admin-switch input{vertical-align:middle;margin-right:6px}
+  .is-admin .admin-banner, .is-admin .admin-actions, .is-admin .admin-switch{display:flex}
 </style>
 </head>
 <body>
   <div class="dir-wrap" id="sth-dir">
-    <h1>Find a Practitioner or Service</h1>
+    <div class="dir-topbar">
+      <h1>Find a Practitioner or Service</h1>
+      <button id="sth-admin-toggle" class="admin-btn" type="button">Admin</button>
+    </div>
     <p class="dir-lead">Search by name, service or town (e.g. “Massage Telford”, “Wing Chun Wellington”, “Qigong”). Use filters to narrow by category.</p>
+
+    <div class="admin-banner" id="sth-admin-banner" role="status">
+      <strong>Admin Mode</strong> – Toggle entries live/hidden below. Changes are local. Click <em>Copy Updated JSON</em> and paste into GitHub to save.
+      <div class="admin-actions">
+        <button id="sth-copy-json" class="admin-btn gold" type="button">Copy Updated JSON</button>
+        <button id="sth-exit-admin" class="admin-btn outline" type="button">Exit</button>
+      </div>
+    </div>
 
     <div class="dir-controls">
       <div class="dir-search">
@@ -64,6 +86,7 @@
   <script id="sth-data" type="application/json">
   [
     {
+      "live": true,
       "name": "Synergy Tao",
       "primaryService": "Wing Chun & Qigong",
       "tags": ["Holistic Martial Arts","Wing Chun","Qigong","Self-Defence","Meditation","Adults"],
@@ -72,19 +95,21 @@
       "website": "https://synergytao.co.uk",
       "profile": "https://synergytaohub.co.uk/page/synergy-tao",
       "facebook": "https://www.facebook.com/synergytao",
-      "instagram": "https://www.instagram.com/synergytao",
+      "instagram": "https://www.instagram.com/synergy_tao",
       "x": "",
       "tiktok": "",
-      "bluesky": "",
+      "bluesky": "https://bsky.app/profile/sifudavidridgway.bsky.social",
       "youtube": "",
       "linkedin": "",
       "booking": "",
       "email": "mailto:sifudavid@synergytao.co.uk",
       "whatsapp": "https://wa.me/447956096359",
       "phone": "07956 096359",
-      "location": "Telford"
+      "location": "Telford",
+      "notes": "Founder business – always live"
     },
     {
+      "live": false,
       "name": "Business Name",
       "primaryService": "Main Service",
       "tags": ["Service 1", "Service 2", "Service 3"],
@@ -103,7 +128,8 @@
       "email": "mailto:info@example.com",
       "whatsapp": "https://wa.me/447000000000",
       "phone": "07123 456789",
-      "location": "Town, Shropshire"
+      "location": "Town, Shropshire",
+      "notes": "Placeholder – not live until membership confirmed"
     }
   ]
   </script>
@@ -112,8 +138,23 @@
   (function(){
     const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
     const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear"), msgEl=$("#sth-msg");
+    const adminToggleBtn=$("#sth-admin-toggle"), adminBanner=$("#sth-admin-banner"), copyBtn=$("#sth-copy-json"), exitBtn=$("#sth-exit-admin");
 
-    // Parse JSON safely and show helpful error if needed
+    // --- Admin mode handling (client-only) ---
+    const ADMIN_PASS = "sthub"; // change this to anything you like
+    function getQueryParam(name){ return new URLSearchParams(location.search).get(name); }
+    function setAdmin(on){ document.body.classList.toggle('is-admin', !!on); if(!on){localStorage.removeItem('sth-admin');} else {localStorage.setItem('sth-admin','1');} }
+    function isAdmin(){ return localStorage.getItem('sth-admin')==='1' || getQueryParam('admin')==='1'; }
+    function askPass(){
+      const p = prompt("Enter admin passphrase:");
+      if(p && p===ADMIN_PASS){ setAdmin(true); render(); }
+      else if(p!==null){ alert("Incorrect passphrase."); }
+    }
+    adminToggleBtn.addEventListener('click', ()=> { if(isAdmin()) setAdmin(false); else askPass(); render(); });
+    exitBtn && exitBtn.addEventListener('click', ()=> { setAdmin(false); render(); });
+    if(isAdmin()) setAdmin(true);
+
+    // Parse JSON safely
     let entries=[];
     try{
       const raw=$("#sth-data").textContent.trim();
@@ -125,28 +166,32 @@
       entries = [];
     }
 
-    // Build categories from primaryService + tags
-    const cats=new Set();
-    entries.forEach(e=>{
-      if(e && e.primaryService) cats.add(String(e.primaryService).trim());
-      (e && e.tags || []).forEach(t=> t && cats.add(String(t).trim()));
-    });
+    // Build categories from all entries that are live (or all when admin to see chips even for hidden?)
+    function currentEntries(){
+      return isAdmin() ? entries : entries.filter(e => e && e.live !== false);
+    }
+
+    function rebuildChips(){
+      chipsEl.innerHTML = "";
+      const cats=new Set();
+      currentEntries().forEach(e=>{
+        if(e.primaryService) cats.add(String(e.primaryService).trim());
+        (e.tags||[]).forEach(t=> t && cats.add(String(t).trim()));
+      });
+      Array.from(cats).sort((a,b)=>a.localeCompare(b)).forEach(cat=>{
+        const chip=document.createElement("button");
+        chip.className="chip"; chip.type="button"; chip.textContent=cat;
+        chip.addEventListener("click",()=>{
+          if(state.active.has(cat)){ state.active.delete(cat); chip.classList.remove("active"); }
+          else { state.active.add(cat); chip.classList.add("active"); }
+          render();
+        });
+        chipsEl.appendChild(chip);
+      });
+    }
 
     const state={ tokens:[], active:new Set() };
 
-    // Chips
-    Array.from(cats).sort((a,b)=>a.localeCompare(b)).forEach(cat=>{
-      const chip=document.createElement("button");
-      chip.className="chip"; chip.type="button"; chip.textContent=cat;
-      chip.addEventListener("click",()=>{
-        if(state.active.has(cat)){ state.active.delete(cat); chip.classList.remove("active"); }
-        else { state.active.add(cat); chip.classList.add("active"); }
-        render();
-      });
-      chipsEl.appendChild(chip);
-    });
-
-    // Search: require ALL tokens to match (name/service/tags/location/phone)
     function setQuery(q){
       const norm = (q||"").toLowerCase().trim();
       state.tokens = norm ? norm.split(/\s+/).filter(Boolean) : [];
@@ -182,14 +227,25 @@
       return `<a target="_blank" rel="noopener" href="${safe}">${label}</a>`;
     }
 
-    function card(e){
+    function card(e, idx){
       const el=document.createElement("div");
       el.className="card";
 
-      // Optional thumbnail (logo vs photo)
-      const isLogo = !!e.isLogo;
+      // Admin live/hidden toggle
+      if(isAdmin()){
+        const sw=document.createElement('label');
+        sw.className='admin-switch';
+        const id='live_'+idx;
+        sw.innerHTML = `<input id="${id}" type="checkbox" ${e.live!==false?'checked':''}> Live`;
+        sw.querySelector('input').addEventListener('change', ev=>{
+          entries[idx].live = ev.target.checked;
+          render();
+        });
+        el.appendChild(sw);
+      }
+
       const thumb = e.image && String(e.image).trim()
-        ? `<img class="thumb ${isLogo ? 'logo' : 'photo'}" src="${esc(e.image)}" alt="${esc(e.name||'Business')} logo or thumbnail">`
+        ? `<img class="thumb ${e.isLogo ? 'logo' : 'photo'}" src="${esc(e.image)}" alt="${esc(e.name||'Business')} logo or thumbnail">`
         : "";
 
       const tags=(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
@@ -214,7 +270,7 @@
         ? `<a class="link" target="_blank" rel="noopener" href="${esc(e.profile)}">View Hub Profile</a>`
         : "";
 
-      el.innerHTML = `
+      el.innerHTML += `
         ${thumb}
         <h3>${esc(e.name||"Unnamed")}</h3>
         <div class="meta">${esc(e.primaryService||"")}${e.location?` · ${esc(e.location)}`:""}</div>
@@ -229,13 +285,43 @@
     }
 
     function render(){
-      const res = entries.filter(match);
+      // Admin UI bits
+      document.body.classList.toggle('is-admin', isAdmin());
+      adminBanner.style.display = isAdmin() ? 'flex' : 'none';
+
+      // Rebuild chips (in case live set changed)
+      rebuildChips();
+
+      // Render list
+      const source = currentEntries();
+      const res = source.filter(match);
       listEl.innerHTML = "";
-      res.forEach(e=> listEl.appendChild(card(e)) );
+      res.forEach((e, i) => listEl.appendChild(card(e, entries.indexOf(e))) );
       emptyEl.style.display = res.length ? "none" : "block";
       countEl.textContent = `${res.length} result${res.length===1?"":"s"}`;
     }
 
+    // Copy updated JSON (admin)
+    function copyUpdatedJSON(){
+      try{
+        const text = JSON.stringify(entries, null, 2);
+        navigator.clipboard.writeText(text).then(()=>{
+          alert("Updated JSON copied to clipboard. Paste it into GitHub → index.html → overwrite the JSON block.");
+        }, ()=> {
+          // fallback
+          const ta=document.createElement('textarea');
+          ta.value=text; document.body.appendChild(ta); ta.select();
+          document.execCommand('copy'); document.body.removeChild(ta);
+          alert("Updated JSON copied. Paste it into GitHub.");
+        });
+      }catch(e){ alert("Could not copy JSON: " + (e.message||e)); }
+    }
+    copyBtn && copyBtn.addEventListener('click', copyUpdatedJSON);
+
+    // If URL has ?admin=1, auto-admin (passless). Otherwise require passphrase.
+    if(getQueryParam('admin')==='1'){ setAdmin(true); }
+
+    // Initial render
     render();
   })();
   </script>
