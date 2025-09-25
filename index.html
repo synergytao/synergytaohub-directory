@@ -23,6 +23,9 @@
   @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
   @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
   .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:16px;display:flex;flex-direction:column}
+  .thumb{width:100%;max-height:160px;border-radius:10px;margin-bottom:10px;background:#f4f4f4;display:block}
+  .thumb.logo{object-fit:contain;padding:10px;background:#fff}
+  .thumb.photo{object-fit:cover}
   .card h3{margin:0 0 6px;font-size:18px}
   .meta{font-size:13px;color:#666;margin-top:4px}
   .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -42,7 +45,7 @@
 
     <div class="dir-controls">
       <div class="dir-search">
-        <input id="sth-q" class="dir-input" type="search" placeholder="Search by name, service or town…" autocomplete="off">
+        <input id="sth-q" class="dir-input" type="search" placeholder="Search by name, service or town…" autocomplete="off" aria-label="Search directory">
         <button class="dir-btn" id="sth-clear" type="button">Clear</button>
       </div>
       <div class="chips" id="sth-chips"></div>
@@ -53,23 +56,22 @@
     <div class="empty" id="sth-empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
   </div>
 
-  <!-- DATA: Add entries inside the JSON array.
-       Optional fields: website, profile, facebook, instagram, x, tiktok, bluesky, youtube, linkedin, booking, email, whatsapp
-       Any empty/missing field = its link is hidden.
-  -->
+  <!-- Directory Data -->
   <script id="sth-data" type="application/json">
   [
     {
       "name": "Synergy Tao",
       "primaryService": "Wing Chun & Qigong",
       "tags": ["Holistic Martial Arts","Wing Chun","Qigong","Self-Defence","Meditation","Adults"],
+      "image": "https://synergytaohub.co.uk/images/academies/17941/images/0d772f2be95d.png",
+      "isLogo": true,
       "website": "https://synergytao.co.uk",
       "profile": "https://synergytaohub.co.uk/page/synergy-tao",
       "facebook": "https://www.facebook.com/synergytao",
-      "instagram": "https://www.instagram.com/synergy_tao",
+      "instagram": "https://www.instagram.com/synergytao",
       "x": "",
       "tiktok": "",
-      "bluesky": "https://bsky.app/profile/sifudavidridgway.bsky.social",
+      "bluesky": "",
       "youtube": "",
       "linkedin": "",
       "booking": "",
@@ -86,7 +88,6 @@
     const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
     let entries=[]; try{ entries=JSON.parse($("#sth-data").textContent.trim()); }catch(e){ entries=[]; }
 
-    // Build categories from primaryService + tags
     const cats=new Set();
     entries.forEach(e=>{
       if(e.primaryService) cats.add(e.primaryService.trim());
@@ -96,7 +97,6 @@
     const listEl=$("#sth-list"), emptyEl=$("#sth-empty"), countEl=$("#sth-count"), qEl=$("#sth-q"), chipsEl=$("#sth-chips"), clearBtn=$("#sth-clear");
     const state={ tokens:[], active:new Set() };
 
-    // Chips
     Array.from(cats).sort((a,b)=>a.localeCompare(b)).forEach(cat=>{
       const chip=document.createElement("button");
       chip.className="chip"; chip.type="button"; chip.textContent=cat;
@@ -108,7 +108,6 @@
       chipsEl.appendChild(chip);
     });
 
-    // Search: require ALL tokens to match in (name/service/tags/location/phone)
     function setQuery(q){
       const norm = (q||"").toLowerCase().trim();
       state.tokens = norm ? norm.split(/\s+/).filter(Boolean) : [];
@@ -148,9 +147,12 @@
       const el=document.createElement("div");
       el.className="card";
 
+      const thumb = e.image && String(e.image).trim()
+        ? `<img class="thumb ${e.isLogo ? 'logo' : 'photo'}" src="${esc(e.image)}" alt="${esc(e.name||'Business')} logo or thumbnail">`
+        : "";
+
       const tags=(e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
 
-      // Build socials block (each only if present)
       const socials = [
         miniLink("Website", e.website),
         miniLink("Facebook", e.facebook),
@@ -165,13 +167,14 @@
         miniLink("WhatsApp", e.whatsapp)
       ].filter(Boolean).join("");
 
-      const socialBlock = socials ? `<div class="socials">${socials}</div>` : "";
+      const socialBlock = socials ? `<div class="socials" aria-label="Social and contact links">${socials}</div>` : "";
 
       const profileBtn = e.profile && String(e.profile).trim()
         ? `<a class="link" target="_blank" rel="noopener" href="${esc(e.profile)}">View Hub Profile</a>`
         : "";
 
       el.innerHTML = `
+        ${thumb}
         <h3>${esc(e.name||"Unnamed")}</h3>
         <div class="meta">${esc(e.primaryService||"")}${e.location?` · ${esc(e.location)}`:""}</div>
         ${tags?`<div class="tagrow">${tags}</div>`:""}
