@@ -1,11 +1,14 @@
-/* Save to GitHub button (admin-only via ?admin=1) */
-const SAVE_URL  = "https://https://sth-directory-proxy.vercel.app/api/save";
-const API_KEY   = "ST_Admin_Pass"; // must equal Vercel env CLIENT_SHARED_KEY
+/* admin/save-to-github.js  — uses permanent Vercel URL + shows URL in console */
+const SAVE_URL  = "https://sth-directory-proxy.vercel.app/api/save";
+const API_KEY   = "ST_Admin_Pass"; // must match Vercel env CLIENT_SHARED_KEY
 
 const GH_OWNER  = "synergytao";
 const GH_REPO   = "synergytaohub-directory";
 const GH_PATH   = "data/directory.json";
 const GH_BRANCH = "main";
+
+// expose for quick debugging in DevTools
+window.__SAVE_URL = SAVE_URL;
 
 function isAdmin() {
   return location.search.includes("admin=1")
@@ -45,7 +48,7 @@ async function onSaveClick() {
     alert("Saved to GitHub successfully.");
     location.reload();
   } catch (e) {
-    console.error(e);
+    console.error("Save error. SAVE_URL=", SAVE_URL, e);
     alert("Save failed: " + (e.message || e));
   }
 }
