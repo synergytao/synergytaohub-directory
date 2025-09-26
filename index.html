@@ -37,13 +37,18 @@
       border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.06)}
     .logo{width:108px;height:108px;border-radius:12px;border:1px solid var(--line);object-fit:contain;background:#fff}
     .card h3{margin:0 0 6px;font-size:20px}
+    .card h3 a{color:inherit;text-decoration:none}
+    .card h3 a:hover{text-decoration:underline}
     .meta{color:var(--muted);font-size:14px;margin:0 0 8px}
     .tagrow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
     .tag{background:#eef2ff;border:1px solid #e2e8f0;color:#374151;border-radius:30px;padding:4px 9px;font-size:12px}
     .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
     .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none;font-weight:600}
     .btn.brand{background:var(--btn);border-color:var(--brand);color:var(--btn-ink)}
-    .smlink{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none;font-weight:600}
+    .smlinks{display:flex;gap:6px;flex-wrap:wrap}
+    .smlinks a{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+      border-radius:50%;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none}
+    .smlinks a svg{width:18px;height:18px}
     .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:30px;background:#f1f5f9;border:1px solid #e2e8f0;color:#0f172a;font-weight:600}
   </style>
 </head>
@@ -51,7 +56,7 @@
   <div class="wrap">
     <div class="topbar">
       <h1 class="title">Synergy Tao Holistic Health Hub — Directory</h1>
-      <!-- Admin toggle: handled by JS (prompts passkey, loads tools on success) -->
+      <!-- Admin link opens prompt; passkey is set in ADMIN_KEY below -->
       <a id="adminLink" class="admin-btn" href="#" title="Enter admin mode">Admin</a>
     </div>
     <p class="lead">Discover holistic &amp; complementary services across Telford and Shropshire — search by name, service, tags or town.</p>
@@ -67,14 +72,30 @@
   </div>
 
   <script>
-    // ------- config
-    const ADMIN_KEY = "synergy-admin-2025"; // must match Vercel env CLIENT_SHARED_KEY
-    // expose to save script if needed
+    /* ========= ADMIN SETTINGS =========
+       Change your admin passkey here (must match Vercel env CLIENT_SHARED_KEY) */
+    const ADMIN_KEY = "ST_Admin_Pass";
+    /* Permanent proxy URL (stable Production) */
     window.__SAVE_URL = "https://sth-directory-proxy.vercel.app/api/save";
+    /* ================================= */
 
     // ------- utils
     const $ = (sel, el=document) => el.querySelector(sel);
     const escapeHtml = s => String(s||"").replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c]));
+    const smIcon = (name) => {
+      const n = (name||"").toLowerCase();
+      const icon = (path) => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${path}"/></svg>`;
+      // Simple brand-ish glyphs (not exact trademarks), enough to be recognizable
+      if (n.includes("facebook")) return icon("M13 3h4a1 1 0 011 1v3h-3c-.6 0-1 .4-1 1v3h4l-.5 4h-3.5v7h-4v-7H7v-4h3V8.2C10 5.9 11.3 4 13 3z");
+      if (n.includes("instagram")) return icon("M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm6-1.2a1.2 1.2 0 10.001 2.401A1.2 1.2 0 0018 5.8z");
+      if (n==="x" || n.includes("twitter")) return icon("M3 3l7.3 9.5L3 21h4.2l5-6.7L16.7 21H21l-7.5-9.9L21 3h-4.2l-4.8 6.3L7.3 3H3z");
+      if (n.includes("tiktok")) return icon("M15 3h3a6 6 0 004 4v3a9 9 0 01-7-3v7.5A5.5 5.5 0 119 9h3a2.5 2.5 0 102.5 2.5V3z");
+      if (n.includes("youtube")) return icon("M21.8 8.2a3 3 0 00-2.1-2.1C18 5.5 12 5.5 12 5.5s-6 0-7.7.6A3 3 0 002.2 8.2 31 31 0 002 12a31 31 0 00.2 3.8 3 3 0 002.1 2.1C6 18.5 12 18.5 12 18.5s6 0 7.7-.6a3 3 0 002.1-2.1A31 31 0 0022 12a31 31 0 00-.2-3.8zM10 9.8v4.4L14.5 12 10 9.8z");
+      if (n.includes("linkedin")) return icon("M4 4a2 2 0 114 0 2 2 0 01-4 0zM4 8h4v12H4zM10 8h4v2h.1A4.3 4.3 0 0118 7.5C20.8 7.5 22 9.4 22 12.4V20h-4v-6.4c0-1.5-.5-2.6-1.8-2.6-1 0-1.6.7-1.9 1.4V20h-4z");
+      if (n.includes("bluesky")) return icon("M12 3c2 2.8 4.8 5.5 6.4 6.2 2 .8 3.6-.5 2.8 1.7-.7 1.8-4.2 3.6-6.3 3.6 0 2.6.5 3.9 1.2 5.4-1.4-.8-2.5-2-3.1-3.5-.6 1.5-1.7 2.7-3.1 3.5.7-1.5 1.2-2.8 1.2-5.4-2.1 0-5.6-1.8-6.3-3.6-.8-2.2.8-1 2.8-1.7C7.2 8.5 10 5.8 12 3z");
+      // fallback: a simple dot
+      return "<svg viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><circle cx='12' cy='12' r='6'/></svg>";
+    };
 
     // ------- render list
     function renderDirectory(data){
@@ -82,7 +103,6 @@
       const q = $("#q").value.trim().toLowerCase();
       const terms = q.split(/\s+/).filter(Boolean);
 
-      // filter
       let out = data.filter(e => {
         if (!e.live) return false;
         const hay = [
@@ -92,36 +112,44 @@
         return terms.every(t => hay.includes(t));
       });
 
-      // count
       $("#count").textContent = out.length + (out.length===1 ? " result" : " results");
 
-      // build HTML
-      $("#list").innerHTML = out.map(e => {
+      list.innerHTML = out.map(e => {
         const logo = e.logo || e.thumbnail || e.image || e.photo || "";
         const town = e.town || e.location || e.city || "";
         const tags = (e.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
-        const socials = (e.socials||[]);
-        const sBtns = socials.map(s => s && s.url ? `<a class="smlink" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.label||s.name||'Link')}</a>` : "").join("");
+        const socials = (e.socials||[]).filter(s => s && s.url);
 
         const webBtn   = e.website   ? `<a class="btn" href="${escapeHtml(e.website)}" target="_blank" rel="noopener">Website</a>` : "";
         const emailBtn = e.email     ? `<a class="btn" href="mailto:${escapeHtml(e.email)}">Email</a>` : "";
         const callBtn  = e.phone     ? `<a class="btn brand" href="tel:${escapeHtml(e.phone)}">Call</a>` : "";
         const hubBtn   = e.hubProfile? `<a class="btn" href="${escapeHtml(e.hubProfile)}" target="_blank" rel="noopener">View Hub Profile</a>` : "";
 
+        // business name links to hubProfile if present
+        const nameHtml = e.hubProfile
+          ? `<a href="${escapeHtml(e.hubProfile)}" target="_blank" rel="noopener">${escapeHtml(e.name)}</a>`
+          : escapeHtml(e.name);
+
+        const smHtml = socials.map(s =>
+          `<a class="smlinks-btn" href="${escapeHtml(s.url)}" target="_blank" rel="noopener" title="${escapeHtml(s.label||s.name||'Social')}">${smIcon(s.name||s.label)}</a>`
+        ).join("");
+
         return `
           <article class="card" role="listitem">
             ${logo ? `<img class="logo" src="${escapeHtml(logo)}" alt="${escapeHtml(e.name)} logo">` : `<div class="logo" aria-hidden="true"></div>`}
             <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
-              <h3>${escapeHtml(e.name)}</h3>
+              <h3>${nameHtml}</h3>
               <p class="meta">${escapeHtml(e.primaryService || "")}${town ? " · " + escapeHtml(town) : ""}</p>
               <div class="tagrow">${tags}</div>
-              <div class="btnrow">${webBtn}${emailBtn}${callBtn}${hubBtn}${sBtns}</div>
+              <div class="btnrow">
+                ${webBtn}${emailBtn}${callBtn}${hubBtn}
+                ${smHtml ? `<span class="smlinks">${smHtml}</span>` : ""}
+              </div>
             </div>
           </article>
         `;
       }).join("");
 
-      // post height for iframe auto-size
       try {
         const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
         parent.postMessage({ type:"sth-dir-height", height:h }, "*");
@@ -160,14 +188,13 @@
       }
     }
 
-    // ------- admin gate (passkey prompt)
+    // ------- admin gate (prompt for passkey, load tools on success)
     function enableAdmin(){
       if (!document.body.classList.contains("is-admin")) {
         document.body.classList.add("is-admin");
       }
-      // load admin helper script (cache-busted)
       const s = document.createElement("script");
-      s.src = "admin/save-to-github.js?v=2025-09-26-4";
+      s.src = "admin/save-to-github.js?v=2025-09-26-5";
       document.body.appendChild(s);
     }
 
@@ -183,7 +210,6 @@
       }
     }
 
-    // admin link behavior
     document.addEventListener("DOMContentLoaded", ()=>{
       $("#adminLink").addEventListener("click", (e)=>{
         e.preventDefault();
@@ -199,16 +225,11 @@
         }
       });
 
-      // auto-open admin prompt when URL has ?admin=1
       if (new URLSearchParams(location.search).get("admin")==="1") {
-        if (localStorage.getItem("sth_admin")==="1") {
-          enableAdmin();
-        } else {
-          requestAdmin();
-        }
+        if (localStorage.getItem("sth_admin")==="1") enableAdmin();
+        else requestAdmin();
       }
 
-      // search + load
       $("#q").addEventListener("input", ()=> renderDirectory(window.rawData||[]));
       loadDirectoryData();
     });
