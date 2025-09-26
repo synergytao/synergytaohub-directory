@@ -1,4 +1,4 @@
-/* Synergy Tao – Save-to-GitHub injector (admin-only via ?admin=1, iframe-safe) */
+/* Synergy Tao – Save-to-GitHub injector (admin-only, iframe-safe) */
 
 /* ====== EDIT THIS ONE LINE (your Vercel endpoint) ====== */
 const SAVE_URL  = "https://sth-directory-proxy-3uexdgi1m-synergytaos-projects.vercel.app/api/save";
@@ -12,8 +12,20 @@ const GH_PATH   = "data/directory.json";
 const GH_BRANCH = "main";
 
 (function () {
-  // Show admin tools ONLY if URL has ?admin=1
-  const isAdmin = location.search.includes("admin=1");
+  // Only show the save button when the directory is in Admin mode:
+  // - URL has ?admin=1   OR
+  // - page sets a global isAdminMode()   OR
+  // - body holds a known admin class  OR
+  // - an explicit localStorage flag set by your Admin toggle
+  function isAdmin() {
+    if (location.search.includes("admin=1")) return true;
+    try {
+      if (typeof window.isAdminMode === "function" && window.isAdminMode()) return true;
+      if (document.body.classList.contains("is-admin")) return true;
+      if (localStorage.getItem("sth_admin") === "1") return true;
+    } catch(_) {}
+    return false;
+  }
 
   async function fetchCurrentFromGit() {
     const res = await fetch(DATA_URL + "?t=" + Date.now());
@@ -29,7 +41,7 @@ const GH_BRANCH = "main";
         if (!Array.isArray(data) && Array.isArray(window.rawData)) data = window.rawData;
       } catch (_) {}
 
-      // Fallback to committed data if needed
+      // Fallback to committed data (if live state unavailable)
       if (!Array.isArray(data)) data = await fetchCurrentFromGit();
       if (!Array.isArray(data)) { alert("Could not access directory data."); return; }
 
@@ -54,10 +66,10 @@ const GH_BRANCH = "main";
   }
 
   function injectButton() {
-    if (!isAdmin) return;                          // hide for public
+    if (!isAdmin()) return;                             // hidden for public
     if (document.getElementById("sth-save-to-github")) return;
 
-    // Add bottom padding so the button never covers content
+    // Add bottom padding so button never covers content
     try { document.body.style.paddingBottom = "90px"; } catch(_) {}
 
     const b = document.createElement("button");
@@ -93,6 +105,11 @@ const GH_BRANCH = "main";
   function start() {
     injectButton();
     syncWindowRawData();
+
+    // If admin mode toggles after load, keep watching
+    const mo = new MutationObserver(injectButton);
+    mo.observe(document.body, { attributes:true, attributeFilter:["class"] });
+    window.addEventListener("storage", injectButton);
   }
 
   if (document.readyState === "loading") {
