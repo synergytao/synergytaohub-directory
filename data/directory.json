@@ -1,25 +1,6 @@
 [
   {
     "live": true,
-    "name": "Synergy Tao",
-    "primaryService": "Wing Chun & Qigong",
-    "tags": ["Holistic Martial Arts","Wing Chun","Qigong","Self-Defence","Meditation","Adults"],
-    "image": "https://synergytaohub.co.uk/images/academies/17941/images/0d772f2be95d.png",
-    "isLogo": true,
-    "website": "https://synergytao.co.uk",
-    "profile": "https://synergytaohub.co.uk/page/synergytao",
-    "facebook": "https://www.facebook.com/synergytao",
-    "instagram": "https://www.instagram.com/synergy_tao",
-    "x": "",
-    "tiktok": "",
-    "bluesky": "https://bsky.app/profile/sifudavidridgway.bsky.social",
-    "youtube": "",
-    "linkedin": "",
-    "booking": "",
-    "email": "mailto:sifudavid@synergytao.co.uk",
-    "whatsapp": "https://wa.me/447956096359",
-    "phone": "07956 096359",
-    "location": "Telford",
-    "notes": "Founder business – always live"
+    "name": "Test Business"
   }
 ]
