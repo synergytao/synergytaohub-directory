@@ -497,5 +497,29 @@
     render();
   </script>
 <script src="https://synergytao.github.io/synergytaohub-directory/admin/save-to-github.js"></script>
+<!-- STHHH: Admin button + iframe height reporter -->
+<script>
+  /* Show the Save-to-GitHub button inside the directory page */
+  window.STH_ADMIN_ALWAYS = true;
+</script>
+<script src="https://synergytao.github.io/synergytaohub-directory/admin/save-to-github.js"></script>
+
+<script>
+  /* Tell the parent page (Gymdesk) the height of this page so the iframe can resize */
+  (function(){
+    function reportHeight(){
+      try {
+        const h = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight
+        );
+        parent.postMessage({ type: "sth-dir-height", height: h }, "*");
+      } catch(e) {}
+    }
+    window.addEventListener("load", reportHeight);
+    try { new ResizeObserver(reportHeight).observe(document.body); } catch(_) {}
+  })();
+</script>
+<!-- /STHHH -->
 </body>
 </html>
