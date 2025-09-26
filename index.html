@@ -24,7 +24,7 @@
     .title{font-size:28px;font-weight:800;margin:0}
     .lead{color:var(--muted);margin:8px 0 16px;max-width:900px}
     .admin-btn{margin-left:auto;padding:8px 12px;border-radius:12px;border:2px solid var(--brand);
-      background:#fff;color:var(--brand);font-weight:700;cursor:pointer}
+      background:#fff;color:var(--brand);font-weight:700;cursor:pointer;text-decoration:none}
     .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
     .search{flex:1;min-width:260px;padding:12px 14px;border-radius:12px;border:2px solid #cbd5e1;
       outline:0;font-size:16px}
@@ -46,15 +46,15 @@
     .smlink{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none;font-weight:600}
     .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:30px;background:#f1f5f9;border:1px solid #e2e8f0;color:#0f172a;font-weight:600}
     .result-count{color:var(--muted);margin:8px 0 4px}
-    /* admin buttons from save script will sit bottom-right */
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <h1 class="title">Synergy Tao Holistic Health Hub — Directory</h1>
-     <a class="admin-btn" href="https://synergytao.github.io/synergytaohub-directory/?admin=1"
-   target="_blank" rel="noopener" title="Open admin mode in a new tab">Admin</a>
+      <!-- Open admin in a new tab (works even inside Gymdesk iframe) -->
+      <a class="admin-btn" href="https://synergytao.github.io/synergytaohub-directory/?admin=1"
+         target="_blank" rel="noopener" title="Open admin mode in a new tab">Admin</a>
     </div>
     <p class="lead">Discover holistic &amp; complementary services across Telford and Shropshire — search by name, service, tags or town.</p>
 
@@ -69,12 +69,11 @@
   </div>
 
   <script>
-    // ------- util
+    // ------- utils
     const $ = (sel, el=document) => el.querySelector(sel);
-    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
     const escapeHtml = s => String(s||"").replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c]));
 
-    // ------- render
+    // ------- render list
     function renderDirectory(data){
       const list = $("#list");
       const q = $("#q").value.trim().toLowerCase();
@@ -84,9 +83,11 @@
       let out = data.filter(e => {
         if (!e.live) return false;
         const hay = [
-          e.name, e.primaryService, e.town,
-          ...(e.tags||[]), ...(e.keywords||[])
-        ].join(" ").toLowerCase();
+          e.name, e.primaryService,
+          // accept aliases for town/location
+          (e.town || e.location || e.city || "")
+        ].concat(e.tags||[], e.keywords||[])
+         .join(" ").toLowerCase();
         return terms.every(t => hay.includes(t));
       });
 
@@ -95,22 +96,25 @@
 
       // build HTML
       list.innerHTML = out.map(e => {
-        const logo = e.logo || "";
+        // accept multiple keys for logo & town
+        const logo = e.logo || e.thumbnail || e.image || e.photo || "";
+        const town = e.town || e.location || e.city || "";
+
         const tags = (e.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
         const socials = (e.socials||[]);
         const sBtns = socials.map(s => s && s.url ? `<a class="smlink" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.label||s.name||'Link')}</a>` : "").join("");
 
-        const webBtn   = e.website ? `<a class="btn" href="${escapeHtml(e.website)}" target="_blank" rel="noopener">Website</a>` : "";
-        const emailBtn = e.email   ? `<a class="btn" href="mailto:${escapeHtml(e.email)}">Email</a>` : "";
-        const callBtn  = e.phone   ? `<a class="btn brand" href="tel:${escapeHtml(e.phone)}">Call</a>` : "";
-        const hubBtn   = e.hubProfile ? `<a class="btn" href="${escapeHtml(e.hubProfile)}" target="_blank" rel="noopener">View Hub Profile</a>` : "";
+        const webBtn   = e.website   ? `<a class="btn" href="${escapeHtml(e.website)}" target="_blank" rel="noopener">Website</a>` : "";
+        const emailBtn = e.email     ? `<a class="btn" href="mailto:${escapeHtml(e.email)}">Email</a>` : "";
+        const callBtn  = e.phone     ? `<a class="btn brand" href="tel:${escapeHtml(e.phone)}">Call</a>` : "";
+        const hubBtn   = e.hubProfile? `<a class="btn" href="${escapeHtml(e.hubProfile)}" target="_blank" rel="noopener">View Hub Profile</a>` : "";
 
         return `
           <article class="card" role="listitem">
             ${logo ? `<img class="logo" src="${escapeHtml(logo)}" alt="${escapeHtml(e.name)} logo">` : `<div class="logo" aria-hidden="true"></div>`}
             <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
               <h3>${escapeHtml(e.name)}</h3>
-              <p class="meta">${escapeHtml(e.primaryService || "")}${e.town ? " · " + escapeHtml(e.town) : ""}</p>
+              <p class="meta">${escapeHtml(e.primaryService || "")}${town ? " · " + escapeHtml(town) : ""}</p>
               <div class="tagrow">${tags}</div>
               <div class="btnrow">
                 ${webBtn}${emailBtn}${callBtn}${hubBtn}${sBtns}
@@ -120,14 +124,14 @@
         `;
       }).join("");
 
-      // send height to parent (for iframe auto-size)
+      // post height for iframe auto-size
       try {
         const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
         parent.postMessage({ type:"sth-dir-height", height:h }, "*");
       } catch {}
     }
 
-    // ------- chips/tags
+    // ------- popular chips
     function buildChips(data){
       const all = new Set();
       data.forEach(e => (e.tags||[]).forEach(t => all.add(t)));
@@ -143,7 +147,7 @@
       });
     }
 
-    // ------- data loader
+    // ------- data loader (runtime JSON)
     async function loadDirectoryData(){
       try {
         const res = await fetch("data/directory.json?t="+Date.now(), { cache:"no-store" });
@@ -159,15 +163,14 @@
       }
     }
 
-    // search listeners
+    // search listeners + initial load
     document.addEventListener("DOMContentLoaded", ()=>{
       $("#q").addEventListener("input", ()=> renderDirectory(window.rawData||[]));
       loadDirectoryData();
     });
   </script>
 
-  <!-- Admin helpers (only needed when ?admin=1 is present).
-       Version query busts cache when you update the script. -->
+  <!-- Admin helpers (only load when ?admin=1). Version query busts cache. -->
   <script>
     (function(){ if (location.search.includes("admin=1")) {
       document.body.classList.add("is-admin");
@@ -177,7 +180,7 @@
     }})();
   </script>
 
-  <!-- Report height to parent on resize too -->
+  <!-- Report height to parent again on resize -->
   <script>
     (function(){
       function report(){ try{
