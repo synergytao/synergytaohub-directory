@@ -551,5 +551,40 @@
   })();
 </script>
 <script src="admin/save-to-github.js?v=2025-09-26-2"></script>
+<script>
+  // Load live directory data from /data/directory.json and render
+  async function loadDirectoryData() {
+    try {
+      const url = "data/directory.json?t=" + Date.now(); // bust cache
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const json = await res.json();
+
+      // expose for admin save script and for debugging
+      window.rawData = Array.isArray(json) ? json : [];
+      if (typeof renderDirectory === "function") {
+        renderDirectory(window.rawData);
+      } else if (typeof buildList === "function") {
+        buildList(window.rawData);
+      } else {
+        console.warn("No render function found (renderDirectory/buildList).");
+      }
+    } catch (e) {
+      console.warn("Failed to load data/directory.json; using inline fallback if present.", e);
+      // Fallback: if you still have inline rawData defined elsewhere
+      if (Array.isArray(window.rawData)) {
+        if (typeof renderDirectory === "function") renderDirectory(window.rawData);
+        else if (typeof buildList === "function") buildList(window.rawData);
+      }
+    }
+  }
+
+  // Start after DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadDirectoryData);
+  } else {
+    loadDirectoryData();
+  }
+</script>
 </body>
 </html>
