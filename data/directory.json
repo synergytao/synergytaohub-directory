@@ -1,7 +1,6 @@
 [
   {
     "live": true,
-    "isLogo": true,
     "name": "Synergy Tao",
     "primaryService": "Wing Chun & Qigong",
     "tags": [
@@ -10,12 +9,10 @@
       "Qigong",
       "Self-Defence",
       "Meditation",
-      "Adults",
-      "Childrens classes"
+      "Adults"
     ],
     "image": "https://synergytaohub.co.uk/images/academies/17941/images/0d772f2be95d.png",
-    "location": "Telford",
-    "phone": "07956 096359",
+    "isLogo": true,
     "website": "https://synergytao.co.uk",
     "profile": "https://synergytaohub.co.uk/page/synergy-tao",
     "facebook": "https://www.facebook.com/synergytao",
@@ -28,6 +25,8 @@
     "booking": "",
     "email": "mailto:sifudavid@synergytao.co.uk",
     "whatsapp": "https://wa.me/447956096359",
+    "phone": "07956 096359",
+    "location": "Telford test",
     "notes": "Founder business – always live"
   },
   {
