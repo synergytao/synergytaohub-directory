@@ -4,7 +4,7 @@
 */
 
 /* ====== CONFIG – EDIT THESE ====== */
-const SAVE_URL = "https://YOUR_VERCEL_PROJECT.vercel.app/api/save"; // e.g. https://sth-directory-proxy-<name>.vercel.app/api/save
+const SAVE_URL = "https://sth-directory-proxy.vercel.app/api/save"; // e.g. https://sth-directory-proxy-<name>.vercel.app/api/save
 const CLIENT_SHARED_KEY = "synergy-admin-2025";                      // must match Vercel env
 const GH_OWNER  = "synergytao";
 const GH_REPO   = "synergytaohub-directory";
