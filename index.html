@@ -45,16 +45,14 @@
     .btn.brand{background:var(--btn);border-color:var(--brand);color:var(--btn-ink)}
     .smlink{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none;font-weight:600}
     .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:30px;background:#f1f5f9;border:1px solid #e2e8f0;color:#0f172a;font-weight:600}
-    .result-count{color:var(--muted);margin:8px 0 4px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <h1 class="title">Synergy Tao Holistic Health Hub — Directory</h1>
-      <!-- Open admin in a new tab (works even inside Gymdesk iframe) -->
-      <a class="admin-btn" href="https://synergytao.github.io/synergytaohub-directory/?admin=1"
-         target="_blank" rel="noopener" title="Open admin mode in a new tab">Admin</a>
+      <!-- Admin toggle: handled by JS (prompts passkey, loads tools on success) -->
+      <a id="adminLink" class="admin-btn" href="#" title="Enter admin mode">Admin</a>
     </div>
     <p class="lead">Discover holistic &amp; complementary services across Telford and Shropshire — search by name, service, tags or town.</p>
 
@@ -69,6 +67,11 @@
   </div>
 
   <script>
+    // ------- config
+    const ADMIN_KEY = "synergy-admin-2025"; // must match Vercel env CLIENT_SHARED_KEY
+    // expose to save script if needed
+    window.__SAVE_URL = "https://sth-directory-proxy.vercel.app/api/save";
+
     // ------- utils
     const $ = (sel, el=document) => el.querySelector(sel);
     const escapeHtml = s => String(s||"").replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c]));
@@ -83,9 +86,7 @@
       let out = data.filter(e => {
         if (!e.live) return false;
         const hay = [
-          e.name, e.primaryService,
-          // accept aliases for town/location
-          (e.town || e.location || e.city || "")
+          e.name, e.primaryService, (e.town || e.location || e.city || "")
         ].concat(e.tags||[], e.keywords||[])
          .join(" ").toLowerCase();
         return terms.every(t => hay.includes(t));
@@ -95,11 +96,9 @@
       $("#count").textContent = out.length + (out.length===1 ? " result" : " results");
 
       // build HTML
-      list.innerHTML = out.map(e => {
-        // accept multiple keys for logo & town
+      $("#list").innerHTML = out.map(e => {
         const logo = e.logo || e.thumbnail || e.image || e.photo || "";
         const town = e.town || e.location || e.city || "";
-
         const tags = (e.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
         const socials = (e.socials||[]);
         const sBtns = socials.map(s => s && s.url ? `<a class="smlink" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.label||s.name||'Link')}</a>` : "").join("");
@@ -116,9 +115,7 @@
               <h3>${escapeHtml(e.name)}</h3>
               <p class="meta">${escapeHtml(e.primaryService || "")}${town ? " · " + escapeHtml(town) : ""}</p>
               <div class="tagrow">${tags}</div>
-              <div class="btnrow">
-                ${webBtn}${emailBtn}${callBtn}${hubBtn}${sBtns}
-              </div>
+              <div class="btnrow">${webBtn}${emailBtn}${callBtn}${hubBtn}${sBtns}</div>
             </div>
           </article>
         `;
@@ -135,8 +132,8 @@
     function buildChips(data){
       const all = new Set();
       data.forEach(e => (e.tags||[]).forEach(t => all.add(t)));
-      const top = Array.from(all).slice(0, 8);
-      $("#chips").innerHTML = top.map(t => `<button class="chip" data-t="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("");
+      $("#chips").innerHTML = Array.from(all).slice(0, 8)
+        .map(t => `<button class="chip" data-t="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("");
       $("#chips").addEventListener("click", (ev)=>{
         const b = ev.target.closest(".chip"); if(!b) return;
         const t = b.getAttribute("data-t");
@@ -163,21 +160,58 @@
       }
     }
 
-    // search listeners + initial load
+    // ------- admin gate (passkey prompt)
+    function enableAdmin(){
+      if (!document.body.classList.contains("is-admin")) {
+        document.body.classList.add("is-admin");
+      }
+      // load admin helper script (cache-busted)
+      const s = document.createElement("script");
+      s.src = "admin/save-to-github.js?v=2025-09-26-4";
+      document.body.appendChild(s);
+    }
+
+    function requestAdmin(){
+      const entered = prompt("Enter admin passkey:");
+      if (!entered) return;
+      if (entered.trim() === ADMIN_KEY) {
+        localStorage.setItem("sth_admin","1");
+        alert("Admin mode enabled.");
+        enableAdmin();
+      } else {
+        alert("Incorrect passkey.");
+      }
+    }
+
+    // admin link behavior
     document.addEventListener("DOMContentLoaded", ()=>{
+      $("#adminLink").addEventListener("click", (e)=>{
+        e.preventDefault();
+        if (localStorage.getItem("sth_admin")==="1") {
+          if (confirm("Admin already enabled. Disable?")) {
+            localStorage.removeItem("sth_admin");
+            document.body.classList.remove("is-admin");
+            alert("Admin disabled.");
+            location.reload();
+          }
+        } else {
+          requestAdmin();
+        }
+      });
+
+      // auto-open admin prompt when URL has ?admin=1
+      if (new URLSearchParams(location.search).get("admin")==="1") {
+        if (localStorage.getItem("sth_admin")==="1") {
+          enableAdmin();
+        } else {
+          requestAdmin();
+        }
+      }
+
+      // search + load
       $("#q").addEventListener("input", ()=> renderDirectory(window.rawData||[]));
       loadDirectoryData();
     });
-  </script>
-
-  <!-- Admin helpers (only load when ?admin=1). Version query busts cache. -->
-  <script>
-    (function(){ if (location.search.includes("admin=1")) {
-      document.body.classList.add("is-admin");
-      var s = document.createElement("script");
-      s.src = "admin/save-to-github.js?v=2025-09-26-3";
-      document.body.appendChild(s);
-    }})();
   </script>
 
   <!-- Report height to parent again on resize -->
