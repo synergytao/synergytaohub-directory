@@ -1,7 +1,8 @@
 /* Synergy Tao – Save-to-GitHub injector (admin-only, iframe-safe) */
 
 /* ====== EDIT THIS ONE LINE (your Vercel endpoint) ====== */
-const SAVE_URL  = "https://sth-directory-proxy-3uexdgi1m-synergytaos-projects.vercel.app/api/save";
+const SAVE_URL  = "const SAVE_URL = "https://sth-directory-proxy-hbrchnjig-synergytaos-projects.vercel.app/api/save";
+";
 /* ======================================================= */
 
 const DATA_URL  = "https://raw.githubusercontent.com/synergytao/synergytaohub-directory/main/data/directory.json";
