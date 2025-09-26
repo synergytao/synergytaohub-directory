@@ -1,590 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Synergy Tao Holistic Health Hub – Directory</title>
-  <meta name="description" content="Directory of holistic & complementary services in Telford and Shropshire." />
+  <title>Synergy Tao Holistic Health Hub — Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{--ink:#222;--bg:#f6f7f9;--card:#fff;--line:#e5e7eb;--accent:#2F6E4E;--accent2:#65B089;--gold:#C8A74E;--danger:#c0392b}
+    :root{
+      --brand:#2F6E4E; --brand-2:#0f766e; --ink:#0f172a; --ink-2:#334155; --muted:#64748b;
+      --chip:#e6f1eb; --chip-ink:#1f4d36; --card:#fff; --bg:#f8fafc; --line:#e2e8f0;
+      --btn:#eaf6ef; --btn-ink:#1f4d36;
+    }
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-    header{background:#fff;border-bottom:1px solid var(--line);padding:16px;position:relative}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
-    h1{margin:0;font-size:clamp(22px,3vw,28px)}
-    .lead{margin:6px 0 14px;color:#444}
-
-    /* Search bar */
-    .searchbar{margin:16px 0;display:flex;justify-content:center}
-    .search{flex:1;max-width:520px;padding:14px 16px;border:2px solid var(--accent);border-radius:14px;background:#fff;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
-    .search:focus{outline:none;box-shadow:0 0 6px var(--accent2)}
-
-    /* Buttons */
-    .btn{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#174e36;cursor:pointer}
-    .btn.primary{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:700}
-    .btn.gold{border-color:var(--gold);background:var(--gold);color:#111}
-    .btn.outline{border-color:var(--gold);background:#fff;color:#725f1c}
-    .btn.danger{border-color:var(--danger);background:#fff;color:var(--danger)}
-
-    /* Admin button clearly separate (top-right) */
-    #adminBtn{position:absolute;top:16px;right:16px}
-
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
-    .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;cursor:pointer}
-    .chip.active{background:var(--accent2);border-color:var(--accent2);color:#083;font-weight:700}
-    .count{font-size:13px;color:#555;margin:6px 0 12px}
-    .grid{display:grid;gap:14px;grid-template-columns:1fr}
-    @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-    @media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;position:relative}
-    .thumb{width:100%;max-height:160px;border-radius:10px;margin-bottom:10px;background:#f4f4f4;display:block}
-    .thumb.logo{object-fit:contain;padding:10px;background:#fff}
-    .thumb.photo{object-fit:cover}
-    .title{margin:0 0 6px;font-size:18px}
-    .meta{font-size:13px;color:#666;margin:2px 0 6px}
-    .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-    .tag{font-size:12px;background:#eef7f1;border:1px solid #d8eee2;color:#225f45;border-radius:999px;padding:4px 8px}
-    .socials{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-    .socials a{font-size:12px;color:#2b5f46;text-decoration:none;border-bottom:1px dotted #2b5f46}
-    .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-    .link{padding:8px 10px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:#174e36;background:#fff}
-    .link:hover{border-color:var(--accent2)}
-    .empty{padding:16px;border:1px dashed var(--line);border-radius:12px;background:#fafafa;text-align:center}
-    .msg{margin:10px 0;padding:12px;border-radius:10px}
-    .msg.warn{background:#fff8e1;border:1px solid #f0e1a8;color:#775a00}
-    .msg.err{background:#fff5f6;border:1px solid #f5c2c7;color:#8a1f2d}
-
-    /* Admin UI */
-    .admin-bar{display:none;gap:10px;align-items:center;justify-content:space-between}
-    .is-admin .admin-bar{display:flex}
-    .admin-switch{position:absolute;top:10px;right:10px;display:none;font-size:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 8px;gap:8px;align-items:center}
-    .admin-ops{display:none;gap:8px;margin-top:10px}
-    .is-admin .admin-switch, .is-admin .admin-ops{display:flex}
-
-    /* Modal */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);padding:20px;z-index:50}
-    .modal.open{display:flex}
-    .panel{background:#fff;max-width:760px;width:100%;max-height:90vh;border-radius:14px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.1);display:flex;flex-direction:column}
-    .panel header{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between;flex:0 0 auto}
-    .panel h3{margin:0;font-size:18px}
-    .panel .content{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;min-height:0;flex:1 1 auto}
-    .panel .content label{font-size:13px;color:#333;display:flex;flex-direction:column;gap:6px}
-    .panel .content input[type="text"], .panel .content input[type="url"], .panel .content input[type="tel"], .panel .content input[type="email"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
-    .panel .row{display:flex;gap:10px;align-items:center}
-    .panel .full{grid-column:1/-1}
-    .panel footer{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex:0 0 auto}
-    @media (max-width:640px){.panel .content{grid-template-columns:1fr}}
-    body.modal-open{overflow:hidden}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink); background:var(--bg);
+    }
+    .wrap{max-width:1100px;margin:24px auto 80px;padding:0 16px}
+    .topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .title{font-size:28px;font-weight:800;margin:0}
+    .lead{color:var(--muted);margin:8px 0 16px;max-width:900px}
+    .admin-btn{margin-left:auto;padding:8px 12px;border-radius:12px;border:2px solid var(--brand);
+      background:#fff;color:var(--brand);font-weight:700;cursor:pointer}
+    .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
+    .search{flex:1;min-width:260px;padding:12px 14px;border-radius:12px;border:2px solid #cbd5e1;
+      outline:0;font-size:16px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+    .chip{background:var(--chip);color:var(--chip-ink);border:1px solid #cfe3d8;border-radius:30px;
+      padding:6px 10px;font-weight:600;cursor:pointer}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+    .card{display:flex;gap:16px;background:var(--card);padding:16px;border-radius:14px;
+      border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.06)}
+    .logo{width:108px;height:108px;border-radius:12px;border:1px solid var(--line);object-fit:contain;background:#fff}
+    .card h3{margin:0 0 6px;font-size:20px}
+    .meta{color:var(--muted);font-size:14px;margin:0 0 8px}
+    .tagrow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+    .tag{background:#eef2ff;border:1px solid #e2e8f0;color:#374151;border-radius:30px;padding:4px 9px;font-size:12px}
+    .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none;font-weight:600}
+    .btn.brand{background:var(--btn);border-color:var(--brand);color:var(--btn-ink)}
+    .smlink{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none;font-weight:600}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:30px;background:#f1f5f9;border:1px solid #e2e8f0;color:#0f172a;font-weight:600}
+    .result-count{color:var(--muted);margin:8px 0 4px}
+    /* admin buttons from save script will sit bottom-right */
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <h1>Synergy Tao Holistic Health Hub – Directory</h1>
-      <p class="lead">Discover holistic & complementary services across Telford and Shropshire.</p>
-      <div class="searchbar">
-        <input id="q" class="search" type="search" placeholder="🔍 Search by name, service or town…" />
-      </div>
-      <button id="adminBtn" class="btn">Admin</button>
-
-      <div id="adminBar" class="admin-bar">
-        <div class="msg warn"><strong>Admin Mode:</strong> Manage entries (Live/Hidden, Edit, Delete, Add). Copy JSON to save changes.</div>
-        <div style="display:flex; gap:8px;">
-          <button id="addBtn" class="btn">Add Entry</button>
-          <button id="copyBtn" class="btn gold">Copy Updated JSON</button>
-          <button id="exitBtn" class="btn outline">Exit Admin</button>
-        </div>
-      </div>
-
-      <div id="chips" class="chips"></div>
-      <div id="count" class="count"></div>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 class="title">Synergy Tao Holistic Health Hub — Directory</h1>
+      <a class="admin-btn" href="?admin=1" title="Enter admin mode">Admin</a>
     </div>
-  </header>
+    <p class="lead">Discover holistic &amp; complementary services across Telford and Shropshire — search by name, service, tags or town.</p>
 
-  <main class="wrap">
-    <div id="msg"></div>
-    <div id="list" class="grid"></div>
-    <div id="empty" class="empty" style="display:none;">No results found. Try different keywords or clear filters.</div>
-  </main>
-
-  <!-- Modal (Add/Edit) -->
-  <div id="modal" class="modal" aria-hidden="true">
-    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <header>
-        <h3 id="modalTitle">Entry</h3>
-        <button id="closeModal" class="btn">Close</button>
-      </header>
-      <div class="content">
-        <label><span>Live</span><div class="row"><input type="checkbox" id="f-live" checked><span class="muted">Show publicly</span></div></label>
-        <label><span>Is Logo?</span><div class="row"><input type="checkbox" id="f-islogo"><span class="muted">Treat image as a logo (centered)</span></div></label>
-
-        <label class="full"><span>Name *</span><input type="text" id="f-name" required></label>
-        <label class="full"><span>Primary Service</span><input type="text" id="f-primary" placeholder="e.g., Massage, Qigong, Counselling"></label>
-        <label class="full"><span>Tags (comma-separated)</span><input type="text" id="f-tags" placeholder="Massage, Relaxation, Holistic"></label>
-
-        <label class="full"><span>Image URL</span><input type="url" id="f-image" placeholder="https://.../image.jpg or .png"></label>
-        <label class="full"><span>Location / Town</span><input type="text" id="f-location" placeholder="Telford"></label>
-        <label class="full"><span>Phone</span><input type="tel" id="f-phone" placeholder="07123 456789"></label>
-
-        <label><span>Website</span><input type="url" id="f-website" placeholder="https://example.com"></label>
-        <label><span>Hub Profile</span><input type="url" id="f-profile" placeholder="https://synergytaohub.co.uk/page/..."></label>
-
-        <label><span>Facebook</span><input type="url" id="f-facebook" placeholder="https://facebook.com/..."></label>
-        <label><span>Instagram</span><input type="url" id="f-instagram" placeholder="https://instagram.com/..."></label>
-        <label><span>X</span><input type="url" id="f-x" placeholder="https://x.com/..."></label>
-        <label><span>TikTok</span><input type="url" id="f-tiktok" placeholder="https://tiktok.com/@..."></label>
-        <label><span>Bluesky</span><input type="url" id="f-bluesky" placeholder="https://bsky.app/profile/..."></label>
-        <label><span>YouTube</span><input type="url" id="f-youtube" placeholder="https://youtube.com/@..."></label>
-        <label><span>LinkedIn</span><input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/..."></label>
-        <label><span>Booking</span><input type="url" id="f-booking" placeholder="https://bookinglink.com/..."></label>
-        <label><span>Email</span><input type="email" id="f-email" placeholder="name@example.com"></label>
-        <label><span>WhatsApp</span><input type="url" id="f-whatsapp" placeholder="https://wa.me/44..."></label>
-
-        <label class="full"><span>Notes (private)</span><input type="text" id="f-notes" placeholder="Internal note e.g. waiting on logo"></label>
-      </div>
-      <footer>
-        <button id="saveEntry" class="btn gold">Save</button>
-        <button id="cancelEntry" class="btn">Cancel</button>
-      </footer>
+    <div class="search-row">
+      <input id="q" class="search" type="search" placeholder="Search by name, service or town…" />
+      <span id="count" class="pill">0 result</span>
     </div>
+
+    <div id="chips" class="chips" aria-label="Popular tags"></div>
+
+    <div id="list" class="grid" role="list"></div>
   </div>
 
-  <!-- DATA -->
-  <script id="sth-data" type="application/json">
-  [
-    {
-      "live": true,
-      "name": "Synergy Tao",
-      "primaryService": "Wing Chun & Qigong",
-      "tags": ["Holistic Martial Arts","Wing Chun","Qigong","Self-Defence","Meditation","Adults"],
-      "image": "https://synergytaohub.co.uk/images/academies/17941/images/0d772f2be95d.png",
-      "isLogo": true,
-      "website": "https://synergytao.co.uk",
-      "profile": "https://synergytaohub.co.uk/page/synergy-tao",
-      "facebook": "https://www.facebook.com/synergytao",
-      "instagram": "https://www.instagram.com/synergytao",
-      "x": "",
-      "tiktok": "",
-      "bluesky": "",
-      "youtube": "",
-      "linkedin": "",
-      "booking": "",
-      "email": "mailto:sifudavid@synergytao.co.uk",
-      "whatsapp": "https://wa.me/447956096359",
-      "phone": "07956 096359",
-      "location": "Telford",
-      "notes": "Founder business – always live"
-    },
-    {
-      "live": false,
-      "name": "Business Name",
-      "primaryService": "Main Service",
-      "tags": ["Service 1", "Service 2", "Service 3"],
-      "image": "https://synergytaohub.co.uk/images/academies/17941/images/your-image.jpg",
-      "isLogo": false,
-      "website": "https://example.com",
-      "profile": "https://synergytaohub.co.uk/page/business-profile",
-      "facebook": "https://facebook.com/",
-      "instagram": "https://instagram.com/",
-      "x": "https://x.com/",
-      "tiktok": "https://tiktok.com/",
-      "bluesky": "https://bsky.app/",
-      "youtube": "https://youtube.com/",
-      "linkedin": "https://linkedin.com/",
-      "booking": "https://bookinglink.com",
-      "email": "mailto:info@example.com",
-      "whatsapp": "https://wa.me/447000000000",
-      "phone": "07123 456789",
-      "location": "Town, Shropshire",
-      "notes": "Placeholder – not live until membership confirmed"
-    }
-  ]
-  </script>
-
   <script>
-    // ===== Config =====
-    const ADMIN_PASS = "ST_Admin_Pass"; // <<-- CHANGE YOUR ADMIN PASSWORD HERE
+    // ------- util
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+    const escapeHtml = s => String(s||"").replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c]));
 
-    // ===== Shortcuts =====
-    const $ = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
+    // ------- render
+    function renderDirectory(data){
+      const list = $("#list");
+      const q = $("#q").value.trim().toLowerCase();
+      const terms = q.split(/\s+/).filter(Boolean);
 
-    // ===== Elements =====
-    const qEl = $("#q");
-    const listEl = $("#list");
-    const emptyEl = $("#empty");
-    const msgEl = $("#msg");
-    const chipsEl = $("#chips");
-    const countEl = $("#count");
-    const adminBtn = $("#adminBtn");
-    const adminBar = $("#adminBar");
-    const addBtn = $("#addBtn");
-    const copyBtn = $("#copyBtn");
-    const exitBtn = $("#exitBtn");
-    const modal = $("#modal");
-    const modalTitle = $("#modalTitle");
-    const closeModalBtn = $("#closeModal");
-    const saveEntryBtn = $("#saveEntry");
-    const cancelEntryBtn = $("#cancelEntry");
-
-    // Modal form fields
-    const f = {
-      live: $("#f-live"),
-      isLogo: $("#f-islogo"),
-      name: $("#f-name"),
-      primary: $("#f-primary"),
-      tags: $("#f-tags"),
-      image: $("#f-image"),
-      location: $("#f-location"),
-      phone: $("#f-phone"),
-      website: $("#f-website"),
-      profile: $("#f-profile"),
-      facebook: $("#f-facebook"),
-      instagram: $("#f-instagram"),
-      x: $("#f-x"),
-      tiktok: $("#f-tiktok"),
-      bluesky: $("#f-bluesky"),
-      youtube: $("#f-youtube"),
-      linkedin: $("#f-linkedin"),
-      booking: $("#f-booking"),
-      email: $("#f-email"),
-      whatsapp: $("#f-whatsapp"),
-      notes: $("#f-notes")
-    };
-
-    // ===== State =====
-    let rawData = [];
-    try {
-      rawData = JSON.parse($("#sth-data").textContent.trim());
-      if (!Array.isArray(rawData)) throw new Error("Data must be an array");
-    } catch (e) {
-      msgEl.innerHTML = `<div class="msg err"><strong>Data error:</strong> ${e.message}</div>`;
-      rawData = [];
-    }
-    let admin = false;
-    let editIndex = null; // null = add new
-
-    // ===== Helpers =====
-    const esc = s => String(s ?? "");
-    const toTags = s => String(s || "").split(",").map(t => t.trim()).filter(Boolean);
-    const currentEntries = () => admin ? rawData : rawData.filter(e => e && e.live !== false);
-
-    function buildChips() {
-      chipsEl.innerHTML = "";
-      const set = new Set();
-      currentEntries().forEach(e => {
-        if (e.primaryService) set.add(e.primaryService.trim());
-        (e.tags || []).forEach(t => t && set.add(t.trim()));
+      // filter
+      let out = data.filter(e => {
+        if (!e.live) return false;
+        const hay = [
+          e.name, e.primaryService, e.town,
+          ...(e.tags||[]), ...(e.keywords||[])
+        ].join(" ").toLowerCase();
+        return terms.every(t => hay.includes(t));
       });
-      Array.from(set).sort((a,b)=>a.localeCompare(b)).forEach(cat => {
-        const btn = document.createElement("button");
-        btn.className = "chip";
-        btn.textContent = cat;
-        btn.onclick = () => { btn.classList.toggle("active"); render(); };
-        chipsEl.appendChild(btn);
-      });
-    }
 
-    function activeChips() { return $$("#chips .chip.active").map(c => c.textContent.toLowerCase()); }
+      // count
+      $("#count").textContent = out.length + (out.length===1 ? " result" : " results");
 
-    function matchEntry(e, tokens, cats) {
-      const hay = [e.name,e.primaryService,(e.tags||[]).join(" "),e.location,e.phone].join(" ").toLowerCase();
-      const qok = tokens.every(t => hay.includes(t));
-      if (!qok) return false;
-      if (cats.length === 0) return true;
-      const tagset = new Set([e.primaryService, ...(e.tags||[])].filter(Boolean).map(s => s.toLowerCase()));
-      return cats.some(c => tagset.has(c));
-    }
+      // build HTML
+      list.innerHTML = out.map(e => {
+        const logo = e.logo || "";
+        const tags = (e.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
+        const socials = (e.socials||[]);
+        const sBtns = socials.map(s => s && s.url ? `<a class="smlink" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.label||s.name||'Link')}</a>` : "").join("");
 
-    function miniLink(label, href) { return (!href) ? "" : `<a class="link" target="_blank" rel="noopener" href="${esc(href)}">${label}</a>`; }
+        const webBtn   = e.website ? `<a class="btn" href="${escapeHtml(e.website)}" target="_blank" rel="noopener">Website</a>` : "";
+        const emailBtn = e.email   ? `<a class="btn" href="mailto:${escapeHtml(e.email)}">Email</a>` : "";
+        const callBtn  = e.phone   ? `<a class="btn brand" href="tel:${escapeHtml(e.phone)}">Call</a>` : "";
+        const hubBtn   = e.hubProfile ? `<a class="btn" href="${escapeHtml(e.hubProfile)}" target="_blank" rel="noopener">View Hub Profile</a>` : "";
 
-    function socialLinks(e) {
-      const links = [
-        ["Website", e.website], ["Facebook", e.facebook], ["Instagram", e.instagram], ["X", e.x],
-        ["TikTok", e.tiktok], ["Bluesky", e.bluesky], ["YouTube", e.youtube], ["LinkedIn", e.linkedin],
-        ["Book", e.booking], ["Email", e.email], ["WhatsApp", e.whatsapp]
-      ].map(([l, u]) => miniLink(l, u)).filter(Boolean).join("");
-      return links ? `<div class="socials">${links}</div>` : "";
-    }
+        return `
+          <article class="card" role="listitem">
+            ${logo ? `<img class="logo" src="${escapeHtml(logo)}" alt="${escapeHtml(e.name)} logo">` : `<div class="logo" aria-hidden="true"></div>`}
+            <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
+              <h3>${escapeHtml(e.name)}</h3>
+              <p class="meta">${escapeHtml(e.primaryService || "")}${e.town ? " · " + escapeHtml(e.town) : ""}</p>
+              <div class="tagrow">${tags}</div>
+              <div class="btnrow">
+                ${webBtn}${emailBtn}${callBtn}${hubBtn}${sBtns}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
 
-    function card(e, idx) {
-      const visible = e.live !== false;
-      if (!admin && !visible) return "";
-      const thumb = e.image ? `<img class="thumb ${e.isLogo ? "logo" : "photo"}" src="${esc(e.image)}" alt="${esc(e.name)}">` : "";
-      const tags = (e.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
-
-      const adminSwitch = `
-        <label class="admin-switch">
-          <input type="checkbox" ${visible ? "checked" : ""} data-op="toggle" data-idx="${idx}"> Live
-        </label>`;
-
-      const adminOps = `
-        <div class="admin-ops">
-          <button class="btn" data-op="edit" data-idx="${idx}">Edit</button>
-          <button class="btn danger" data-op="delete" data-idx="${idx}">Delete</button>
-        </div>`;
-
-      return `
-        <div class="card" data-idx="${idx}">
-          ${admin ? adminSwitch : ""}
-          ${thumb}
-          <h3 class="title">${esc(e.name || "Unnamed")}</h3>
-          <div class="meta">${esc(e.primaryService || "")}${e.location ? ` · ${esc(e.location)}` : ""}</div>
-          ${tags ? `<div class="tagrow">${tags}</div>` : ""}
-          ${socialLinks(e)}
-          <div class="actions">
-            ${e.profile ? `<a class="link" target="_blank" rel="noopener" href="${esc(e.profile)}">View Hub Profile</a>` : ""}
-            ${e.phone ? `<a class="link" href="tel:${esc(e.phone)}">Call</a>` : ""}
-          </div>
-          ${admin ? adminOps : ""}
-        </div>`;
-    }
-
-    function render() {
-      document.body.classList.toggle("is-admin", admin);
-      adminBar.style.display = admin ? "flex" : "none";
-
-      buildChips();
-
-      const tokens = qEl.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-      const cats = $$("#chips .chip.active").map(c => c.textContent.toLowerCase());
-      const src = currentEntries().filter(e => matchEntry(e, tokens, cats));
-
-      listEl.innerHTML = src.map((e) => card(e, rawData.indexOf(e))).join("");
-      emptyEl.style.display = src.length ? "none" : "block";
-      countEl.textContent = `${src.length} result${src.length===1?"":"s"}`;
-
-      if (admin) {
-        listEl.querySelectorAll("[data-op='toggle']").forEach(inp => {
-          inp.addEventListener("change", ev => {
-            const i = +ev.target.dataset.idx;
-            rawData[i].live = ev.target.checked;
-            render();
-          });
-        });
-        listEl.querySelectorAll("[data-op='edit']").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const i = +btn.dataset.idx;
-            openModal("Edit Entry", rawData[i], i);
-          });
-        });
-        listEl.querySelectorAll("[data-op='delete']").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const i = +btn.dataset.idx;
-            const name = rawData[i]?.name || "this entry";
-            if (confirm(`Delete "${name}"? This only affects this preview until you copy JSON.`)) {
-              rawData.splice(i,1);
-              render();
-            }
-          });
-        });
-      }
-    }
-
-    // ===== Admin controls =====
-    adminBtn.addEventListener("click", () => {
-      if (admin) { render(); return; }
-      const p = prompt("Enter admin password:");
-      if (p === ADMIN_PASS) { admin = true; render(); }
-      else if (p !== null) alert("Incorrect password.");
-    });
-
-    exitBtn.addEventListener("click", () => { admin = false; render(); });
-
-    copyBtn.addEventListener("click", () => {
-      const text = JSON.stringify(rawData, null, 2);
-      navigator.clipboard.writeText(text).then(
-        () => alert("Updated JSON copied. Paste it into index.html (JSON block) and commit."),
-        () => {
-          const ta = document.createElement("textarea");
-          ta.value = text; document.body.appendChild(ta); ta.select();
-          document.execCommand("copy"); document.body.removeChild(ta);
-          alert("Updated JSON copied. Paste it into index.html and commit.");
-        }
-      );
-    });
-
-    addBtn.addEventListener("click", () => {
-      openModal("Add Entry", {
-        live:true,isLogo:false,name:"",primaryService:"",tags:[],image:"",
-        website:"",profile:"",facebook:"",instagram:"",x:"",tiktok:"",bluesky:"",
-        youtube:"",linkedin:"",booking:"",email:"",whatsapp:"",phone:"",location:"",notes:""
-      }, null);
-    });
-
-    // ===== Modal =====
-    function fillForm(d){
-      f.live.checked = d.live !== false;
-      f.isLogo.checked = !!d.isLogo;
-      f.name.value = d.name || "";
-      f.primary.value = d.primaryService || "";
-      f.tags.value = (d.tags||[]).join(", ");
-      f.image.value = d.image || "";
-      f.location.value = d.location || "";
-      f.phone.value = d.phone || "";
-      f.website.value = d.website || "";
-      f.profile.value = d.profile || "";
-      f.facebook.value = d.facebook || "";
-      f.instagram.value = d.instagram || "";
-      f.x.value = d.x || "";
-      f.tiktok.value = d.tiktok || "";
-      f.bluesky.value = d.bluesky || "";
-      f.youtube.value = d.youtube || "";
-      f.linkedin.value = d.linkedin || "";
-      f.booking.value = d.booking || "";
-      f.email.value = (d.email||"").replace(/^mailto:/i,"");
-      f.whatsapp.value = d.whatsapp || "";
-      f.notes.value = d.notes || "";
-    }
-
-    function collectForm(){
-      return {
-        live: f.live.checked,
-        isLogo: f.isLogo.checked,
-        name: f.name.value.trim(),
-        primaryService: f.primary.value.trim(),
-        tags: toTags(f.tags.value),
-        image: f.image.value.trim(),
-        location: f.location.value.trim(),
-        phone: f.phone.value.trim(),
-        website: f.website.value.trim(),
-        profile: f.profile.value.trim(),
-        facebook: f.facebook.value.trim(),
-        instagram: f.instagram.value.trim(),
-        x: f.x.value.trim(),
-        tiktok: f.tiktok.value.trim(),
-        bluesky: f.bluesky.value.trim(),
-        youtube: f.youtube.value.trim(),
-        linkedin: f.linkedin.value.trim(),
-        booking: f.booking.value.trim(),
-        email: f.email.value.trim() ? `mailto:${f.email.value.trim()}` : "",
-        whatsapp: f.whatsapp.value.trim(),
-        notes: f.notes.value.trim()
-      };
-    }
-
-    function openModal(title, data, index){
-      modalTitle.textContent = title;
-      fillForm(data || {});
-      editIndex = (index===0 || index) ? index : null;
-      modal.classList.add("open");
-      document.body.classList.add("modal-open");
-    }
-
-    function closeModal(){
-      modal.classList.remove("open");
-      document.body.classList.remove("modal-open");
-      editIndex = null;
-    }
-
-    $("#closeModal").addEventListener("click", closeModal);
-    $("#cancelEntry").addEventListener("click", closeModal);
-    document.addEventListener("keydown", e => { if(e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
-
-    $("#saveEntry").addEventListener("click", () => {
-      const obj = collectForm();
-      if (!obj.name) { alert("Name is required."); return; }
-      if (editIndex===0 || typeof editIndex === "number") rawData[editIndex] = obj;
-      else rawData.push(obj);
-      closeModal();
-      render();
-    });
-
-    // Search
-    qEl.addEventListener("input", render);
-
-    // Initial render
-    render();
-  </script>
-<script src="https://synergytao.github.io/synergytaohub-directory/admin/save-to-github.js"></script>
-<!-- STHHH: Admin button + iframe height reporter -->
-<script>
-  /* Show the Save-to-GitHub button inside the directory page */
-  window.STH_ADMIN_ALWAYS = true;
-</script>
-<script src="https://synergytao.github.io/synergytaohub-directory/admin/save-to-github.js"></script>
-
-<script>
-  /* Tell the parent page (Gymdesk) the height of this page so the iframe can resize */
-  (function(){
-    function reportHeight(){
-      try {
-        const h = Math.max(
-          document.body.scrollHeight,
-          document.documentElement.scrollHeight
-        );
-        parent.postMessage({ type: "sth-dir-height", height: h }, "*");
-      } catch(e) {}
-    }
-    window.addEventListener("load", reportHeight);
-    try { new ResizeObserver(reportHeight).observe(document.body); } catch(_) {}
-  })();
-</script>
-<!-- /STHHH -->
-<!-- STHHH: Report height to parent (Gymdesk) for auto-resize -->
-<script>
-  (function(){
-    function reportHeight(){
-      try {
-        const h = Math.max(
-          document.body.scrollHeight,
-          document.documentElement.scrollHeight
-        );
-        parent.postMessage({ type: "sth-dir-height", height: h }, "*");
-      } catch(e) {}
-    }
-    window.addEventListener("load", reportHeight);
-    try { new ResizeObserver(reportHeight).observe(document.body); } catch(_) {}
-  })();
-</script>
-<!-- STHHH: Report height to the parent (Gymdesk) so the iframe auto-resizes -->
-<script>
-  (function(){
-    function reportHeight(){
+      // send height to parent (for iframe auto-size)
       try {
         const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-        parent.postMessage({ type: "sth-dir-height", height: h }, "*");
-      } catch(e) {}
+        parent.postMessage({ type:"sth-dir-height", height:h }, "*");
+      } catch {}
     }
-    window.addEventListener("load", reportHeight);
-    try { new ResizeObserver(reportHeight).observe(document.body); } catch(_) {}
-  })();
-</script>
-<script src="admin/save-to-github.js?v=2025-09-26-2"></script>
-<script>
-  // Load live directory data from /data/directory.json and render
-  async function loadDirectoryData() {
-    try {
-      const url = "data/directory.json?t=" + Date.now(); // bust cache
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const json = await res.json();
 
-      // expose for admin save script and for debugging
-      window.rawData = Array.isArray(json) ? json : [];
-      if (typeof renderDirectory === "function") {
+    // ------- chips/tags
+    function buildChips(data){
+      const all = new Set();
+      data.forEach(e => (e.tags||[]).forEach(t => all.add(t)));
+      const top = Array.from(all).slice(0, 8);
+      $("#chips").innerHTML = top.map(t => `<button class="chip" data-t="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("");
+      $("#chips").addEventListener("click", (ev)=>{
+        const b = ev.target.closest(".chip"); if(!b) return;
+        const t = b.getAttribute("data-t");
+        const q = $("#q");
+        const cur = q.value.trim();
+        q.value = cur ? `${cur} ${t}` : t;
+        renderDirectory(window.rawData||[]);
+      });
+    }
+
+    // ------- data loader
+    async function loadDirectoryData(){
+      try {
+        const res = await fetch("data/directory.json?t="+Date.now(), { cache:"no-store" });
+        if (!res.ok) throw new Error("HTTP "+res.status);
+        const json = await res.json();
+        window.rawData = Array.isArray(json) ? json : [];
+        buildChips(window.rawData);
         renderDirectory(window.rawData);
-      } else if (typeof buildList === "function") {
-        buildList(window.rawData);
-      } else {
-        console.warn("No render function found (renderDirectory/buildList).");
-      }
-    } catch (e) {
-      console.warn("Failed to load data/directory.json; using inline fallback if present.", e);
-      // Fallback: if you still have inline rawData defined elsewhere
-      if (Array.isArray(window.rawData)) {
-        if (typeof renderDirectory === "function") renderDirectory(window.rawData);
-        else if (typeof buildList === "function") buildList(window.rawData);
+      } catch(err){
+        console.warn("Failed to load data/directory.json", err);
+        window.rawData = window.rawData || [];
+        renderDirectory(window.rawData);
       }
     }
-  }
 
-  // Start after DOM is ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", loadDirectoryData);
-  } else {
-    loadDirectoryData();
-  }
-</script>
+    // search listeners
+    document.addEventListener("DOMContentLoaded", ()=>{
+      $("#q").addEventListener("input", ()=> renderDirectory(window.rawData||[]));
+      loadDirectoryData();
+    });
+  </script>
+
+  <!-- Admin helpers (only needed when ?admin=1 is present).
+       Version query busts cache when you update the script. -->
+  <script>
+    (function(){ if (location.search.includes("admin=1")) {
+      document.body.classList.add("is-admin");
+      var s = document.createElement("script");
+      s.src = "admin/save-to-github.js?v=2025-09-26-3";
+      document.body.appendChild(s);
+    }})();
+  </script>
+
+  <!-- Report height to parent on resize too -->
+  <script>
+    (function(){
+      function report(){ try{
+        const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        parent.postMessage({ type:"sth-dir-height", height:h }, "*");
+      }catch{}}
+      window.addEventListener("load", report);
+      try { new ResizeObserver(report).observe(document.body); } catch(_) {}
+    })();
+  </script>
 </body>
 </html>
