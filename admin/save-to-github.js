@@ -1,5 +1,5 @@
 /* Save to GitHub button (admin-only via ?admin=1) */
-const SAVE_URL  = "https://sth-directory-proxy-qu11uy5na-synergytaos-projects.vercel.app/api/save";
+const SAVE_URL  = "https://https://sth-directory-proxy.vercel.app/api/save";
 const API_KEY   = "ST_Admin_Pass"; // must equal Vercel env CLIENT_SHARED_KEY
 
 const GH_OWNER  = "synergytao";
