@@ -1,18 +1,19 @@
-/* Synergy Tao – Save-to-GitHub injector (iframe-safe, conflict-free) */
+/* Synergy Tao – Save-to-GitHub injector (admin-only via ?admin=1, iframe-safe) */
 
-/* ====== CONFIG – EDIT THIS ONE LINE ====== */
+/* ====== EDIT THIS ONE LINE (your Vercel endpoint) ====== */
 const SAVE_URL  = "https://sth-directory-proxy-3uexdgi1m-synergytaos-projects.vercel.app/api/save";
-/* ======================================== */
+/* ======================================================= */
 
 const DATA_URL  = "https://raw.githubusercontent.com/synergytao/synergytaohub-directory/main/data/directory.json";
-const API_KEY   = "ST_Admin_Pas"; // must match Vercel CLIENT_SHARED_KEY
+const API_KEY   = "ST_Admin_Pass"; // must match Vercel CLIENT_SHARED_KEY
 const GH_OWNER  = "synergytao";
 const GH_REPO   = "synergytaohub-directory";
 const GH_PATH   = "data/directory.json";
 const GH_BRANCH = "main";
 
 (function () {
-  const forceShow = !!window.STH_ADMIN_ALWAYS || location.search.includes("admin=1");
+  // Show admin tools ONLY if URL has ?admin=1
+  const isAdmin = location.search.includes("admin=1");
 
   async function fetchCurrentFromGit() {
     const res = await fetch(DATA_URL + "?t=" + Date.now());
@@ -28,7 +29,7 @@ const GH_BRANCH = "main";
         if (!Array.isArray(data) && Array.isArray(window.rawData)) data = window.rawData;
       } catch (_) {}
 
-      // Fallback to committed data
+      // Fallback to committed data if needed
       if (!Array.isArray(data)) data = await fetchCurrentFromGit();
       if (!Array.isArray(data)) { alert("Could not access directory data."); return; }
 
@@ -41,6 +42,7 @@ const GH_BRANCH = "main";
           owner: GH_OWNER, repo: GH_REPO, path: GH_PATH, branch: GH_BRANCH
         })
       });
+
       const text = await res.text();
       if (!res.ok) throw new Error(text || ("HTTP " + res.status));
       alert("Saved to GitHub successfully.");
@@ -51,23 +53,12 @@ const GH_BRANCH = "main";
     }
   }
 
-  function hideLegacyCopyBtn() {
-    try {
-      const byId = document.getElementById("copyBtn");
-      if (byId) byId.style.display = "none";
-      const buttons = document.querySelectorAll("button,a");
-      for (const el of buttons) {
-        const t = (el.textContent || "").trim().toLowerCase();
-        if (t.includes("copy") && t.includes("updated") && t.includes("json")) {
-          el.style.display = "none";
-        }
-      }
-    } catch (_) {}
-  }
-
   function injectButton() {
-    if (!forceShow) return; // only show when told to
+    if (!isAdmin) return;                          // hide for public
     if (document.getElementById("sth-save-to-github")) return;
+
+    // Add bottom padding so the button never covers content
+    try { document.body.style.paddingBottom = "90px"; } catch(_) {}
 
     const b = document.createElement("button");
     b.id = "sth-save-to-github";
@@ -100,7 +91,6 @@ const GH_BRANCH = "main";
   }
 
   function start() {
-    hideLegacyCopyBtn();
     injectButton();
     syncWindowRawData();
   }
