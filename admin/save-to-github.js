@@ -1,48 +1,86 @@
-/* Synergy Tao – inject "Save to GitHub" button for the directory admin
-   Host this file, then include via:
-   <script src="https://synergytao.github.io/synergytaohub-directory/admin/save-to-github.js"></script>
+/* Synergy Tao – Save-to-GitHub injector (Admin-only)
+   Host at:
+   https://synergytao.github.io/synergytaohub-directory/admin/save-to-github.js
 */
 
 /* ====== CONFIG – EDIT THESE ====== */
-const SAVE_URL = "https://sth-directory-proxy.vercel.app/api/save"; // e.g. https://sth-directory-proxy-<name>.vercel.app/api/save
-const CLIENT_SHARED_KEY = "synergy-admin-2025";                      // must match Vercel env
+const DATA_URL  = "https://raw.githubusercontent.com/synergytao/synergytaohub-directory/main/data/directory.json";
+const SAVE_URL  = "https://sth-directory-proxy.vercel.app/api/save"; // e.g. https://sth-directory-proxy-<name>.vercel.app/api/save
+const API_KEY   = "synergy-admin-2025"; // must match Vercel CLIENT_SHARED_KEY
 const GH_OWNER  = "synergytao";
 const GH_REPO   = "synergytaohub-directory";
 const GH_PATH   = "data/directory.json";
 const GH_BRANCH = "main";
 /* ================================= */
 
-/* helper: find the old "Copy Updated JSON" button by id or text */
+/* helpers */
+const $ = (s)=>document.querySelector(s);
+const $$ = (s)=>Array.from(document.querySelectorAll(s));
+
+function inAdminMode() {
+  return document.body.classList.contains("is-admin") || ($("#adminBar") && getComputedStyle($("#adminBar")).display !== "none");
+}
+
 function findLegacyCopyBtn() {
   let btn = document.getElementById("copyBtn");
   if (btn) return btn;
-  const candidates = Array.from(document.querySelectorAll("button, a"));
+  const candidates = $$("button, a");
   return candidates.find(el => /copy\s*updated\s*json/i.test((el.textContent||"").trim()));
 }
 
-/* save to GitHub via Vercel */
-async function saveToGitHub() {
+async function fetchCurrentFromGit() {
+  const res = await fetch(DATA_URL + "?t=" + Date.now());
+  return await res.json();
+}
+
+/* build the button */
+function makeSaveBtn() {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = "Save to GitHub";
+  b.style.cssText = `
+    display:inline-block;margin-left:10px;padding:10px 14px;
+    background:#2F6E4E;color:#fff;border:2px solid #2F6E4E;
+    border-radius:10px;font-weight:700;cursor:pointer
+  `;
+  b.addEventListener("click", onSaveClick);
+  return b;
+}
+
+/* click handler */
+async function onSaveClick() {
   try {
-    if (!Array.isArray(window.rawData)) {
-      alert("Nothing to save: data array (rawData) not found.");
-      return;
+    // Prefer the live, in-memory data edited by Admin UI
+    let data = (typeof window.getDirectoryData === "function" && window.getDirectoryData()) ||
+               (Array.isArray(window.rawData) ? window.rawData : null);
+
+    // If we couldn't read it, fall back to Git (won't have your edits though)
+    if (!Array.isArray(data)) {
+      data = await fetchCurrentFromGit();
+      if (!Array.isArray(data)) {
+        alert("Could not access directory data.");
+        return;
+      }
     }
+
     const res = await fetch(SAVE_URL, {
       method: "POST",
       headers: {
-        "X-API-Key": CLIENT_SHARED_KEY,
+        "X-API-Key": API_KEY,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        json: window.rawData,
+        json: data,
         message: `Admin update from directory page (${new Date().toISOString()})`,
         owner: GH_OWNER, repo: GH_REPO, path: GH_PATH, branch: GH_BRANCH
       })
     });
+
     const text = await res.text();
     if (!res.ok) throw new Error(text || ("HTTP " + res.status));
+
     alert("Saved to GitHub successfully.");
-    // reload to pull the latest JSON (your page fetches from GitHub on load)
+    // Reload the page so it re-fetches latest JSON and re-renders
     location.reload();
   } catch (e) {
     console.error(e);
@@ -50,37 +88,36 @@ async function saveToGitHub() {
   }
 }
 
-/* create & insert the new button; hide the old one if present */
-function injectSaveButton() {
+/* main */
+function injectWhenReady() {
   const legacy = findLegacyCopyBtn();
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.textContent = "Save to GitHub";
-  btn.style.cssText = `
-    display:inline-block;margin-left:10px;padding:10px 14px;
-    background:#2F6E4E;color:#fff;border:2px solid #2F6E4E;
-    border-radius:10px;font-weight:700;cursor:pointer
-  `;
-  btn.addEventListener("click", saveToGitHub);
+  const exists = document.getElementById("sth-save-to-github");
 
-  if (legacy && legacy.parentNode) {
-    legacy.style.display = "none";
-    legacy.parentNode.insertBefore(btn, legacy.nextSibling);
+  // Only show while in Admin mode
+  if (inAdminMode()) {
+    if (!exists) {
+      const btn = makeSaveBtn();
+      btn.id = "sth-save-to-github";
+      if (legacy && legacy.parentNode) {
+        legacy.style.display = "none";
+        legacy.parentNode.insertBefore(btn, legacy.nextSibling);
+      } else {
+        // fallback position
+        const header = document.querySelector("header .wrap") || document.body;
+        header.appendChild(btn);
+      }
+    }
   } else {
-    // fallback floating button
-    btn.style.position = "fixed";
-    btn.style.right = "16px";
-    btn.style.bottom = "16px";
-    btn.style.boxShadow = "0 6px 20px rgba(0,0,0,.15)";
-    btn.style.zIndex = "9999";
-    document.body.appendChild(btn);
+    // Not admin -> ensure button is hidden
+    if (legacy) legacy.style.display = "";
+    const b = document.getElementById("sth-save-to-github");
+    if (b && b.parentNode) b.parentNode.removeChild(b);
   }
 }
 
-/* run after DOM is ready; also observe dynamic UI changes */
-function ready(fn){ document.readyState!=="loading" ? fn() : document.addEventListener("DOMContentLoaded", fn); }
-ready(() => {
-  injectSaveButton();
-  const mo = new MutationObserver(() => injectSaveButton());
-  mo.observe(document.body, { childList:true, subtree:true });
+/* run and observe changes (Admin button toggles the class dynamically) */
+document.addEventListener("DOMContentLoaded", () => {
+  injectWhenReady();
+  const mo = new MutationObserver(injectWhenReady);
+  mo.observe(document.body, { attributes:true, attributeFilter:["class"], childList:true, subtree:true });
 });
