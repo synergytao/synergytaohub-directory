@@ -6,7 +6,7 @@
 /* ====== CONFIG – EDIT THESE ====== */
 const DATA_URL  = "https://raw.githubusercontent.com/synergytao/synergytaohub-directory/main/data/directory.json";
 const SAVE_URL  = "https://sth-directory-proxy.vercel.app/api/save"; // e.g. https://sth-directory-proxy-<name>.vercel.app/api/save
-const API_KEY   = "synergy-admin-2025"; // must match Vercel CLIENT_SHARED_KEY
+const API_KEY   = "ST_Admin_Pass"; // must match Vercel CLIENT_SHARED_KEY
 const GH_OWNER  = "synergytao";
 const GH_REPO   = "synergytaohub-directory";
 const GH_PATH   = "data/directory.json";
