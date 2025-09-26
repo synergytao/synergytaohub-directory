@@ -1,5 +1,6 @@
 // save-to-github.js
-const SAVE_URL = "https://sth-directory-proxy-hbrchnjig-synergytaos-projects.vercel.app/api/save";
+const SAVE_URL = "const SAVE_URL = "https://sth-directory-proxy-qu11uy5na-synergytaos-projects.vercel.app/api/save";
+";
 
 async function saveToGitHub(updatedData) {
   try {
