@@ -1,6 +1,60 @@
 [
   {
     "live": true,
-    "name": "Test Business"
+    "isLogo": true,
+    "name": "Synergy Tao",
+    "primaryService": "Wing Chun & Qigong",
+    "tags": [
+      "Holistic Martial Arts",
+      "Wing Chun",
+      "Qigong",
+      "Self-Defence",
+      "Meditation",
+      "Adults",
+      "Childrens classes"
+    ],
+    "image": "https://synergytaohub.co.uk/images/academies/17941/images/0d772f2be95d.png",
+    "location": "Telford",
+    "phone": "07956 096359",
+    "website": "https://synergytao.co.uk",
+    "profile": "https://synergytaohub.co.uk/page/synergy-tao",
+    "facebook": "https://www.facebook.com/synergytao",
+    "instagram": "https://www.instagram.com/synergytao",
+    "x": "",
+    "tiktok": "",
+    "bluesky": "",
+    "youtube": "",
+    "linkedin": "",
+    "booking": "",
+    "email": "mailto:sifudavid@synergytao.co.uk",
+    "whatsapp": "https://wa.me/447956096359",
+    "notes": "Founder business – always live"
+  },
+  {
+    "live": false,
+    "name": "Business Name",
+    "primaryService": "Main Service",
+    "tags": [
+      "Service 1",
+      "Service 2",
+      "Service 3"
+    ],
+    "image": "https://synergytaohub.co.uk/images/academies/17941/images/your-image.jpg",
+    "isLogo": false,
+    "website": "https://example.com",
+    "profile": "https://synergytaohub.co.uk/page/business-profile",
+    "facebook": "https://facebook.com/",
+    "instagram": "https://instagram.com/",
+    "x": "https://x.com/",
+    "tiktok": "https://tiktok.com/",
+    "bluesky": "https://bsky.app/",
+    "youtube": "https://youtube.com/",
+    "linkedin": "https://linkedin.com/",
+    "booking": "https://bookinglink.com",
+    "email": "mailto:info@example.com",
+    "whatsapp": "https://wa.me/447000000000",
+    "phone": "07123 456789",
+    "location": "Town, Shropshire",
+    "notes": "Placeholder – not live until membership confirmed"
   }
 ]
