@@ -521,5 +521,21 @@
   })();
 </script>
 <!-- /STHHH -->
+<!-- STHHH: Report height to parent (Gymdesk) for auto-resize -->
+<script>
+  (function(){
+    function reportHeight(){
+      try {
+        const h = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight
+        );
+        parent.postMessage({ type: "sth-dir-height", height: h }, "*");
+      } catch(e) {}
+    }
+    window.addEventListener("load", reportHeight);
+    try { new ResizeObserver(reportHeight).observe(document.body); } catch(_) {}
+  })();
+</script>
 </body>
 </html>
