@@ -11,13 +11,13 @@
     :root{
       --brand:#2F6E4E; --brand-2:#0f766e; --ink:#0f172a; --ink-2:#334155; --muted:#64748b;
       --chip:#e6f1eb; --chip-ink:#1f4d36; --card:#fff; --bg:#f8fafc; --line:#e2e8f0;
-      --btn:#eaf6ef; --btn-ink:#1f4d36;
+      --btn:#eaf6ef; --btn-ink:#1f4d36; --danger:#b91c1c;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{ margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       color:var(--ink); background:var(--bg); }
-    .wrap{max-width:1100px;margin:24px auto 80px;padding:0 16px}
+    .wrap{max-width:1100px;margin:24px auto 96px;padding:0 16px}
     .topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .title{font-size:28px;font-weight:800;margin:0}
     .lead{color:var(--muted);margin:8px 0 16px;max-width:900px}
@@ -31,7 +31,7 @@
       padding:6px 10px;font-weight:600;cursor:pointer}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
-    .card{display:flex;gap:16px;background:var(--card);padding:16px;border-radius:14px;
+    .card{position:relative;display:flex;gap:16px;background:var(--card);padding:16px;border-radius:14px;
       border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.06)}
     .logo{width:108px;height:108px;border-radius:12px;border:1px solid var(--line);object-fit:contain;background:#fff}
     .card h3{margin:0 0 6px;font-size:20px}
@@ -48,6 +48,29 @@
       border-radius:50%;border:1px solid #cbd5e1;background:#fff;color:#111827;text-decoration:none}
     .smlinks a svg{width:18px;height:18px}
     .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:30px;background:#f1f5f9;border:1px solid #e2e8f0;color:#0f172a;font-weight:600}
+
+    /* Admin UI */
+    .admin-toolbar{position:fixed;left:16px;bottom:16px;z-index:9999;display:flex;gap:8px;flex-wrap:wrap}
+    .adm{padding:9px 12px;border-radius:10px;border:2px solid var(--brand);background:#fff;color:var(--brand);font-weight:700;cursor:pointer}
+    .adm.sec{border-color:#0f766e;color:#0f766e}
+    .adm.warn{border-color:#a16207;color:#a16207}
+    .adm.note{border-color:#94a3b8;color:#334155}
+    .pending{position:fixed;left:16px;bottom:62px;background:#fef9c3;border:1px solid #fde68a;color:#1f2937;padding:6px 10px;border-radius:8px;display:none;z-index:9998}
+    .admin-controls{position:absolute;top:8px;right:8px;display:flex;gap:6px}
+    .admin-controls button{padding:5px 8px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#111827;cursor:pointer}
+    .admin-controls .danger{border-color:#fca5a5;color:#b91c1c}
+
+    /* Modal */
+    .modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:10000;padding:24px}
+    .modal{width:min(1100px,95vw);max-height:85vh;background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+    .modal header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #e5e7eb;font-weight:800}
+    .modal footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid #e5e7eb}
+    .modal .body{padding:12px;overflow:auto}
+    .modal textarea{width:100%;height:60vh;border:0;background:#f8fafc;padding:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;font-size:13px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-grid label{font-size:12px;color:#475569}
+    .form-grid input,.form-grid textarea{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:10px}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
   </style>
 </head>
 <body>
@@ -68,14 +91,54 @@
     <div id="list" class="grid" role="list"></div>
   </div>
 
+  <!-- Pending notice -->
+  <div id="pending" class="pending">Changes pending — don’t forget to “Save to GitHub”.</div>
+
+  <!-- JSON Editor Modal -->
+  <div id="jsonModal" class="modal-wrap" role="dialog" aria-modal="true" aria-labelledby="jsonTitle">
+    <div class="modal">
+      <header><div id="jsonTitle">Directory JSON</div><button id="jsonClose" class="adm">Close</button></header>
+      <div class="body"><textarea id="jsonTA" spellcheck="false"></textarea></div>
+      <footer>
+        <button id="jsonFormat" class="adm sec">Format</button>
+        <button id="jsonApply" class="adm">Apply & Close</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Entry Editor Modal -->
+  <div id="entryModal" class="modal-wrap" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
+    <div class="modal">
+      <header><div id="entryTitle">Add / Edit Entry</div><button id="entryClose" class="adm">Close</button></header>
+      <div class="body">
+        <div class="form-grid">
+          <div><label>Name</label><input id="f_name" placeholder="Business name"></div>
+          <div><label>Primary Service</label><input id="f_service" placeholder="e.g., Qigong, Massage"></div>
+          <div><label>Town / Location</label><input id="f_town" placeholder="Telford"></div>
+          <div><label>Phone</label><input id="f_phone" placeholder="+44..."></div>
+          <div><label>Email</label><input id="f_email" placeholder="hello@..."></div>
+          <div><label>Website</label><input id="f_website" placeholder="https://..."></div>
+          <div><label>Hub Profile URL</label><input id="f_hub" placeholder="https://synergytaohub.co.uk/page/..."></div>
+          <div><label>Logo/Thumbnail URL</label><input id="f_logo" placeholder="https://...png"></div>
+          <div style="grid-column:1 / -1;"><label>Tags (comma-separated)</label><input id="f_tags" placeholder="Wing Chun, Qigong, Meditation"></div>
+          <div style="grid-column:1 / -1;"><label>Keywords (comma-separated, optional)</label><input id="f_keys" placeholder="Self-defence, Holistic, Wellness"></div>
+          <div style="grid-column:1 / -1;"><label>Socials (one per line: Name|https://url)</label><textarea id="f_socials" rows="4" placeholder="Facebook|https://facebook.com/...\nInstagram|https://instagram.com/..."></textarea></div>
+          <div class="row"><label><input type="checkbox" id="f_live" checked> Live (visible)</label></div>
+        </div>
+      </div>
+      <footer>
+        <button id="entrySave" class="adm">Save Entry</button>
+      </footer>
+    </div>
+  </div>
+
   <script>
     /* ========= ADMIN SETTINGS =========
-       1) Change your admin passkey **here**.
-          MUST match Vercel env CLIENT_SHARED_KEY. */
-    const ADMIN_KEY = "ST_Admin_Pass";  /* <-- CHANGE ME */
+       Change your admin passkey here (also set same in Vercel env CLIENT_SHARED_KEY) */
+    const ADMIN_KEY = "ST_Admin_Pass";  /* <-- CHANGE IF NEEDED */
     /* Permanent proxy URL (stable Production) */
     window.__SAVE_URL = "https://sth-directory-proxy.vercel.app/api/save";
-    /* Expose ADMIN_KEY for the saver */
+    /* Expose ADMIN_KEY for the saver script */
     window.ADMIN_KEY = ADMIN_KEY;
     /* ================================= */
 
@@ -94,9 +157,7 @@
       if (n.includes("bluesky")) return icon("M12 3c2 2.8 4.8 5.5 6.4 6.2 2 .8 3.6-.5 2.8 1.7-.7 1.8-4.2 3.6-6.3 3.6 0 2.6.5 3.9 1.2 5.4-1.4-.8-2.5-2-3.1-3.5-.6 1.5-1.7 2.7-3.1 3.5.7-1.5 1.2-2.8 1.2-5.4-2.1 0-5.6-1.8-6.3-3.6-.8-2.2.8-1 2.8-1.7C7.2 8.5 10 5.8 12 3z");
       return "<svg viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><circle cx='12' cy='12' r='6'/></svg>";
     };
-
-    // Build socials from either an array or flat keys
-    function buildSocials(e){
+    const buildSocials = (e) => {
       if (Array.isArray(e.socials) && e.socials.length) return e.socials.filter(s=>s && s.url);
       const map = {
         Facebook: e.facebook, Instagram: e.instagram,
@@ -104,7 +165,10 @@
         YouTube: e.youtube, LinkedIn: e.linkedin, Bluesky: e.bluesky
       };
       return Object.entries(map).filter(([,url])=>!!url).map(([name,url])=>({ name, url }));
-    }
+    };
+
+    // ------- state
+    let editingIndex = null; // index being edited (null = add)
 
     // ------- render list
     function renderDirectory(data){
@@ -112,7 +176,7 @@
       const q = $("#q").value.trim().toLowerCase();
       const terms = q.split(/\s+/).filter(Boolean);
 
-      let out = data.filter(e => {
+      let out = data.map((e, i) => ({...e, __i:i})).filter(e => {
         if (!e.live) return false;
         const hay = [
           e.name, e.primaryService, (e.town || e.location || e.city || "")
@@ -123,7 +187,7 @@
 
       $("#count").textContent = out.length + (out.length===1 ? " result" : " results");
 
-      list.innerHTML = out.map(e => {
+      $("#list").innerHTML = out.map(e => {
         const logo = e.logo || e.thumbnail || e.image || e.photo || "";
         const town = e.town || e.location || e.city || "";
         const tags = (e.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
@@ -133,17 +197,20 @@
         const emailBtn = e.email     ? `<a class="btn" href="mailto:${escapeHtml(e.email)}">Email</a>` : "";
         const callBtn  = e.phone     ? `<a class="btn brand" href="tel:${escapeHtml(e.phone)}">Call</a>` : "";
         const hubUrl   = e.hubProfile || e.profile || e.hub || e.profileUrl || "";
+        const nameHtml = hubUrl ? `<a href="${escapeHtml(hubUrl)}" target="_blank" rel="noopener">${escapeHtml(e.name)}</a>` : escapeHtml(e.name);
+        const smHtml = socials.map(s => `<a class="smlinks-btn" href="${escapeHtml(s.url)}" target="_blank" rel="noopener" title="${escapeHtml(s.name)}">${smIcon(s.name)}</a>`).join("");
 
-        const nameHtml = hubUrl
-          ? `<a href="${escapeHtml(hubUrl)}" target="_blank" rel="noopener">${escapeHtml(e.name)}</a>`
-          : escapeHtml(e.name);
-
-        const smHtml = socials.map(s =>
-          `<a class="smlink" href="${escapeHtml(s.url)}" target="_blank" rel="noopener" title="${escapeHtml(s.name)}">${smIcon(s.name)}</a>`
-        ).join("");
+        // admin controls per card (only visible in admin mode)
+        const adminCtrls = document.body.classList.contains("is-admin") ? `
+          <div class="admin-controls">
+            <button data-act="toggle" data-i="${e.__i}">${e.live ? 'Live: On' : 'Live: Off'}</button>
+            <button data-act="edit" data-i="${e.__i}">Edit</button>
+            <button class="danger" data-act="remove" data-i="${e.__i}">Remove</button>
+          </div>` : "";
 
         return `
           <article class="card" role="listitem">
+            ${adminCtrls}
             ${logo ? `<img class="logo" src="${escapeHtml(logo)}" alt="${escapeHtml(e.name)} logo">` : `<div class="logo" aria-hidden="true"></div>`}
             <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
               <h3>${nameHtml}</h3>
@@ -159,13 +226,14 @@
         `;
       }).join("");
 
+      // post height for iframe auto-size
       try {
         const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
         parent.postMessage({ type:"sth-dir-height", height:h }, "*");
       } catch {}
     }
 
-    // ------- popular chips
+    // ------- chips
     function buildChips(data){
       const all = new Set();
       data.forEach(e => (e.tags||[]).forEach(t => all.add(t)));
@@ -181,7 +249,7 @@
       });
     }
 
-    // ------- data loader (runtime JSON)
+    // ------- data loader
     async function loadDirectoryData(){
       try {
         const res = await fetch("data/directory.json?t="+Date.now(), { cache:"no-store" });
@@ -197,15 +265,55 @@
       }
     }
 
-    // ------- admin gate (prompt for passkey, load tools on success)
-    function enableAdmin(){
-      if (!document.body.classList.contains("is-admin")) {
-        document.body.classList.add("is-admin");
+    // ------- admin prompt + enable
+    function enableAdminUI(){
+      if (!document.body.classList.contains("is-admin")) document.body.classList.add("is-admin");
+
+      // Admin toolbar
+      if (!$('#admBar')) {
+        const bar = document.createElement('div');
+        bar.id = 'admBar';
+        bar.className = 'admin-toolbar';
+        bar.innerHTML = `
+          <button class="adm"    id="btnAdd">Add Entry</button>
+          <button class="adm sec" id="btnJson">Edit JSON</button>
+          <button class="adm note" id="btnReload">Reload Data</button>
+        `;
+        document.body.appendChild(bar);
       }
-      const s = document.createElement("script");
-      s.src = "admin/save-to-github.js?v=2025-09-26-6"; /* cache-bust */
-      document.body.appendChild(s);
+      // Pending note
+      $('#pending').style.display = 'none';
+
+      // Handlers
+      $('#btnReload').onclick = ()=> loadDirectoryData();
+      $('#btnJson').onclick = openJsonEditor;
+      $('#btnAdd').onclick = ()=> openEntryEditor(null);
+
+      // Delegate per-card admin controls
+      document.addEventListener('click', (ev)=>{
+        const b = ev.target.closest('.admin-controls button');
+        if (!b) return;
+        const act = b.getAttribute('data-act');
+        const i = +b.getAttribute('data-i');
+        if (Number.isNaN(i) || !window.rawData || !window.rawData[i]) return;
+
+        if (act === 'toggle') {
+          window.rawData[i].live = !window.rawData[i].live;
+          showPending();
+          renderDirectory(window.rawData);
+        } else if (act === 'edit') {
+          openEntryEditor(i);
+        } else if (act === 'remove') {
+          if (confirm('Remove this entry?')) {
+            window.rawData.splice(i,1);
+            showPending();
+            renderDirectory(window.rawData);
+          }
+        }
+      }, false);
     }
+
+    function showPending(){ $('#pending').style.display = 'block'; }
 
     function requestAdmin(){
       const entered = prompt("Enter admin passkey:");
@@ -213,39 +321,127 @@
       if (entered.trim() === ADMIN_KEY) {
         localStorage.setItem("sth_admin","1");
         alert("Admin mode enabled.");
-        enableAdmin();
+        enableAdminUI();
+        // load save helper (adds “Save to GitHub” button)
+        const s = document.createElement("script");
+        s.src = "admin/save-to-github.js?v=2025-09-26-7";
+        document.body.appendChild(s);
       } else {
         alert("Incorrect passkey.");
       }
     }
 
+    // ------- JSON editor modal
+    function openJsonEditor(){
+      const mw = $('#jsonModal'), ta = $('#jsonTA');
+      ta.value = JSON.stringify(window.rawData||[], null, 2);
+      mw.style.display = 'flex';
+    }
+    function closeJson(){ $('#jsonModal').style.display = 'none'; }
+    $('#jsonClose').onclick = closeJson;
+    $('#jsonFormat').onclick = ()=>{ try { $('#jsonTA').value = JSON.stringify(JSON.parse($('#jsonTA').value), null, 2);} catch(e){ alert('JSON error: '+e.message);} };
+    $('#jsonApply').onclick = ()=>{
+      try {
+        const parsed = JSON.parse($('#jsonTA').value);
+        if (!Array.isArray(parsed)) return alert('JSON must be an array.');
+        window.rawData = parsed;
+        closeJson();
+        showPending();
+        renderDirectory(window.rawData);
+      } catch(e){ alert('JSON error: '+e.message); }
+    };
+
+    // ------- entry editor modal
+    function openEntryEditor(index){
+      editingIndex = index;
+      const m = $('#entryModal'); m.style.display = 'flex';
+      const e = (index==null) ? {} : (window.rawData[index] || {});
+      // fill
+      $('#f_name').value = e.name || '';
+      $('#f_service').value = e.primaryService || '';
+      $('#f_town').value = e.town || e.location || e.city || '';
+      $('#f_phone').value = e.phone || '';
+      $('#f_email').value = e.email || '';
+      $('#f_website').value = e.website || '';
+      $('#f_hub').value = e.hubProfile || e.profile || e.hub || e.profileUrl || '';
+      $('#f_logo').value = e.logo || e.thumbnail || e.image || e.photo || '';
+      $('#f_tags').value = (e.tags||[]).join(', ');
+      $('#f_keys').value = (e.keywords||[]).join(', ');
+      const socials = (Array.isArray(e.socials) && e.socials.length)
+        ? e.socials.map(s=>`${s.name||s.label||'Link'}|${s.url}`).join('\n')
+        : ['facebook','instagram','x','twitter','tiktok','youtube','linkedin','bluesky']
+            .map(k=>e[k] ? (k[0].toUpperCase()+k.slice(1))+'|'+e[k] : '')
+            .filter(Boolean).join('\n');
+      $('#f_socials').value = socials || '';
+      $('#f_live').checked = (e.live!==false);
+    }
+    $('#entryClose').onclick = ()=> { $('#entryModal').style.display='none'; };
+    $('#entrySave').onclick = ()=>{
+      const entry = {
+        name: $('#f_name').value.trim(),
+        primaryService: $('#f_service').value.trim(),
+        town: $('#f_town').value.trim(),
+        phone: $('#f_phone').value.trim(),
+        email: $('#f_email').value.trim(),
+        website: $('#f_website').value.trim(),
+        hubProfile: $('#f_hub').value.trim(),
+        logo: $('#f_logo').value.trim(),
+        tags: $('#f_tags').value.split(',').map(s=>s.trim()).filter(Boolean),
+        keywords: $('#f_keys').value.split(',').map(s=>s.trim()).filter(Boolean),
+        live: $('#f_live').checked
+      };
+      // socials parse
+      const lines = $('#f_socials').value.split('\n').map(s=>s.trim()).filter(Boolean);
+      entry.socials = lines.map(line=>{
+        const p = line.split('|');
+        if (p.length>=2 && p[1].startsWith('http')) return { name:p[0].trim(), url:p[1].trim() };
+        return null;
+      }).filter(Boolean);
+
+      if (!entry.name) return alert('Name is required.');
+      if (editingIndex==null){
+        window.rawData.push(entry);
+      } else {
+        window.rawData[editingIndex] = entry;
+      }
+      $('#entryModal').style.display='none';
+      showPending();
+      renderDirectory(window.rawData);
+    };
+
+    // ------- wire up page
     document.addEventListener("DOMContentLoaded", ()=>{
+      $("#q").addEventListener("input", ()=> renderDirectory(window.rawData||[]));
       $("#adminLink").addEventListener("click", (e)=>{
         e.preventDefault();
         if (localStorage.getItem("sth_admin")==="1") {
+          if (!document.body.classList.contains("is-admin")) enableAdminUI();
           if (confirm("Admin already enabled. Disable?")) {
             localStorage.removeItem("sth_admin");
             document.body.classList.remove("is-admin");
             alert("Admin disabled.");
             location.reload();
           }
-        } else {
-          requestAdmin();
+          return;
         }
+        requestAdmin();
       });
 
       if (new URLSearchParams(location.search).get("admin")==="1") {
-        if (localStorage.getItem("sth_admin")==="1") enableAdmin();
-        else requestAdmin();
+        if (localStorage.getItem("sth_admin")==="1") {
+          enableAdminUI();
+          const s = document.createElement("script");
+          s.src = "admin/save-to-github.js?v=2025-09-26-7";
+          document.body.appendChild(s);
+        } else {
+          requestAdmin();
+        }
       }
 
-      $("#q").addEventListener("input", ()=> renderDirectory(window.rawData||[]));
       loadDirectoryData();
     });
-  </script>
 
-  <!-- Report height to parent again on resize -->
-  <script>
+    // Resize reporting for Gymdesk iframe
     (function(){
       function report(){ try{
         const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
@@ -255,5 +451,7 @@
       try { new ResizeObserver(report).observe(document.body); } catch(_) {}
     })();
   </script>
+
+  <!-- Save-to-GitHub loader is injected only when admin is enabled -->
 </body>
 </html>
