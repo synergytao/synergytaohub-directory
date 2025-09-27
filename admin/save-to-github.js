@@ -1,6 +1,6 @@
-/* admin/save-to-github.js — stable API + reads passkey from page */
+/* admin/save-to-github.js — stable API; reads passkey from page (window.ADMIN_KEY) */
 const SAVE_URL  = (window.__SAVE_URL || "https://sth-directory-proxy.vercel.app/api/save");
-const API_KEY   = (window.ADMIN_KEY   || "ST_Admin_Pass"); // ← comes from index.html
+const API_KEY   = (window.ADMIN_KEY   || "synergy-admin-2025"); // must match Vercel env CLIENT_SHARED_KEY
 
 const GH_OWNER  = "synergytao";
 const GH_REPO   = "synergytaohub-directory";
@@ -20,10 +20,7 @@ async function fetchCommitted() {
 async function onSaveClick() {
   try {
     let data = null;
-    if (typeof window.getDirectoryData === "function") {
-      try { data = window.getDirectoryData(); } catch {}
-    }
-    if (!Array.isArray(data) && Array.isArray(window.rawData)) data = window.rawData;
+    if (Array.isArray(window.rawData)) data = window.rawData;
     if (!Array.isArray(data)) data = await fetchCommitted();
     if (!Array.isArray(data)) return alert("Could not read directory data.");
 
