@@ -10,9 +10,7 @@
       "Self-Defence",
       "Meditation",
       "Adults",
-      "Childrens classes",
-      "WCI",
-      "BHQA"
+      "Childrens classes"
     ],
     "image": "https://synergytaohub.co.uk/images/academies/17941/images/0d772f2be95d.png",
     "isLogo": true,
@@ -58,5 +56,27 @@
     "phone": "07123 456789",
     "location": "Town, Shropshire",
     "notes": "Placeholder – not live until membership confirmed"
+  },
+  {
+    "name": "Sarah Waterfall Acupuncture",
+    "primaryService": "Acupuncture",
+    "town": "Telford",
+    "phone": "07967294021",
+    "email": "",
+    "website": "https://www.sarahwaterfallacupuncture.co.uk",
+    "hubProfile": "https://synergytaohub/page/sarahwaterfallacupuncture",
+    "logo": "https://synergytaohub.co.uk/images/academies/17941/images/5296411d337d.png",
+    "tags": [
+      "Acupuncture",
+      "British Acupuncture Council"
+    ],
+    "keywords": [],
+    "live": true,
+    "socials": [
+      {
+        "name": "Facebook",
+        "url": "https://www.facebook.com/profile.php?id=61556826398063"
+      }
+    ]
   }
 ]
