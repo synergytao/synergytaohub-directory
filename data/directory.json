@@ -40,8 +40,11 @@
     "primaryService": "Acupuncture",
     "tags": [
       "Acupuncture",
+      "Cupping",
+      "Gua Sha",
+      "Five Element",
       "British Acupuncture Council",
-      "Service 3"
+      "Professional Standards Authority"
     ],
     "image": "https://synergytaohub.co.uk/images/academies/17941/images/5296411d337d.png",
     "isLogo": true,
@@ -59,7 +62,7 @@
     "whatsapp": "",
     "phone": "07967294021",
     "location": "Telford, Shropshire",
-    "notes": "Placeholder – not live until membership confirmed"
+    "notes": "Notes"
   },
   {
     "live": false,
