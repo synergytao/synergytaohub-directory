@@ -1,6 +1,38 @@
 [
   {
     "live": true,
+    "name": "E&S Holistic Therapies",
+    "primaryService": "Crystal Healing, Reiki, and Crystal Facial Massage",
+    "tags": [
+      "Insured",
+      "DBS",
+      "First Aid Trained",
+      "Holistic Healing",
+      "Holistic Therapies",
+      "Crystal Healing",
+      "Reiki",
+      "Aura Cleanse"
+    ],
+    "image": "",
+    "isLogo": false,
+    "website": "",
+    "profile": "https://synergytaohub.co.uk/page/eandsholistictherapies",
+    "facebook": "https://www.facebook.com/share/1KXxxDcTHe/?mibextid=wwXIfr",
+    "instagram": " https://www.instagram.com/esholistictherapies?igsh=MTRsOWZwN2k3MmF3Nw==",
+    "x": "",
+    "tiktok": "",
+    "bluesky": "",
+    "youtube": "",
+    "linkedin": "",
+    "booking": "",
+    "email": "",
+    "whatsapp": "",
+    "phone": "",
+    "location": "Telford, Shropshire",
+    "notes": "Auto-listed – in contact"
+  },
+  {
+    "live": true,
     "name": "Synergy Tao",
     "primaryService": "Wing Chun & Qigong",
     "tags": [
@@ -93,7 +125,7 @@
     "notes": "Placeholder – not live until membership confirmed"
   },
   {
-    "live": true,
+    "live": false,
     "name": "E&S Holistic Therapies",
     "primaryService": "Energy Healing",
     "tags": [],
