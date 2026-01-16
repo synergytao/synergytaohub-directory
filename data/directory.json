@@ -905,5 +905,28 @@
     "phone": "",
     "location": "Shropshire",
     "notes": "Auto-listed"
+},
+  {
+    "live": true,
+    "name": "White Light Therapies",
+    "primaryService": "Holistic Therapy",
+    "tags": [],
+    "image": "",
+    "isLogo": false,
+    "website": "https://www.whitelighttherapies.co.uk",
+    "profile": "",
+    "facebook": "",
+    "instagram": "",
+    "x": "",
+    "tiktok": "",
+    "bluesky": "",
+    "youtube": "",
+    "linkedin": "",
+    "booking": "",
+    "email": "",
+    "whatsapp": "",
+    "phone": "",
+    "location": "Shrewsbury, Shropshire",
+    "notes": "Auto-listed"
 }
 ]
