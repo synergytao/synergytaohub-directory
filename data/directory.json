@@ -100,6 +100,33 @@
     "location": "Telford, Shropshire",
     "notes": "Founder business – always live"
   },
+  {
+    "live": true,
+    "name": "Your Business Here!",
+    "primaryService": "Your Main service",
+    "tags": [
+      "Service 2",
+      "Service 3",
+      "Service 4"
+    ],
+    "image": "",
+    "isLogo": false,
+    "website": "https://example",
+    "profile": "https://example",
+    "facebook": "https://example",
+    "instagram": "https://example",
+    "x": "https://example",
+    "tiktok": "https://tiktok/",
+    "bluesky": "https://example",
+    "youtube": "https://example",
+    "linkedin": "https://example",
+    "booking": "https://example",
+    "email": "mailto:info@example.com",
+    "whatsapp": "https://wa.me/example",
+    "phone": "01234 567890",
+    "location": "Your Town, Shropshire",
+    "notes": "Placeholder – not live until membership confirmed"
+  },
     {
     "live": false,
     "name": "Business Name",
