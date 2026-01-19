@@ -127,6 +127,33 @@
     "location": "Town, Shropshire",
     "notes": "Placeholder – not live until membership confirmed"
   },
+   {
+    "live": true,
+    "name": "Anna Wells Acupuncture",
+    "primaryService": "Classical Chinese Medicine and Acupuncture",
+    "tags": [
+      "Service 1",
+      "Service 2",
+      "Service 3"
+    ],
+    "image": "",
+    "isLogo": false,
+    "website": "",
+    "profile": "",
+    "facebook": "https://www.facebook.com/annawellsacupuncture/",
+    "instagram": "",
+    "x": "",
+    "tiktok": "",
+    "bluesky": "",
+    "youtube": "",
+    "linkedin": "",
+    "booking": "",
+    "email": "mailto:",
+    "whatsapp": "",
+    "phone": "",
+    "location": "Shrewsbury, Shropshire",
+    "notes": "Free account"
+  },
   {
     "live": true,
     "name": "Annie's Reiki Centre",
